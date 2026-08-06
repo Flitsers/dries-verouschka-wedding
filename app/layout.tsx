@@ -28,7 +28,9 @@ export default function RootLayout({
       lang="nl"
       className={`${inter.variable} ${cormorant.variable}`}
     >
-      <body>{children}</body>
+      <body id="top">
+        {children}
+      </body>
     </html>
   );
 }

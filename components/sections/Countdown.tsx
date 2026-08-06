@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { wedding } from "@/lib/wedding";
 
 export default function Countdown() {
-  const weddingDate = new Date("2026-12-19T16:00:00").getTime();
-
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -12,56 +11,104 @@ export default function Countdown() {
     seconds: 0,
   });
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = weddingDate - now;
 
-      if (distance <= 0) {
-        clearInterval(timer);
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const target = wedding.event.date.getTime();
+
+      const difference = target - now;
+
+
+      if (difference <= 0) {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+
         return;
       }
 
+
       setTimeLeft({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        days: Math.floor(
+          difference / (1000 * 60 * 60 * 24)
+        ),
+
         hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+          (difference / (1000 * 60 * 60)) % 24
         ),
+
         minutes: Math.floor(
-          (distance % (1000 * 60 * 60)) / (1000 * 60)
+          (difference / (1000 * 60)) % 60
         ),
+
         seconds: Math.floor(
-          (distance % (1000 * 60)) / 1000
+          (difference / 1000) % 60
         ),
       });
-    }, 1000);
+    };
 
-    return () => clearInterval(timer);
-  }, [weddingDate]);
+
+    updateCountdown();
+
+    const interval = setInterval(
+      updateCountdown,
+      1000
+    );
+
+
+    return () => clearInterval(interval);
+
+  }, []);
+
+
+
+  const items = [
+    {
+      value: timeLeft.days,
+      label: "dagen",
+    },
+    {
+      value: timeLeft.hours,
+      label: "uur",
+    },
+    {
+      value: timeLeft.minutes,
+      label: "minuten",
+    },
+    {
+      value: timeLeft.seconds,
+      label: "seconden",
+    },
+  ];
+
 
   return (
-    <div className="mt-16 grid grid-cols-2 gap-6 md:grid-cols-4">
-      <TimeCard value={timeLeft.days} label="Dagen" />
-      <TimeCard value={timeLeft.hours} label="Uur" />
-      <TimeCard value={timeLeft.minutes} label="Minuten" />
-      <TimeCard value={timeLeft.seconds} label="Seconden" />
-    </div>
-  );
-}
+    <div className="mt-10 flex flex-wrap justify-center gap-4">
 
-function TimeCard({
-  value,
-  label,
-}: {
-  value: number;
-  label: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/20 bg-white/10 px-8 py-6 backdrop-blur-md">
-      <p className="text-5xl font-bold">{value}</p>
-      <p className="mt-2 text-xs uppercase tracking-[0.3em] text-gray-200">
-        {label}
-      </p>
+      {items.map((item) => (
+
+        <div
+          key={item.label}
+          className="group flex h-28 w-28 flex-col items-center justify-center rounded-2xl border border-[#d4b06a]/30 bg-white/10 backdrop-blur-md transition duration-500 hover:border-[#d4b06a] hover:bg-white/15"
+        >
+
+          <span className="text-4xl font-semibold text-white">
+            {item.value}
+          </span>
+
+
+          <span className="mt-2 text-xs uppercase tracking-[0.35em] text-[#d4b06a]">
+            {item.label}
+          </span>
+
+        </div>
+
+      ))}
+
     </div>
   );
 }
