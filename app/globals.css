@@ -6,14 +6,48 @@
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-cormorant);
+
+  --gold: #d4b06a;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
-}.snowflake {
-  top: -10px;
+  overflow-x: hidden;
+}
+
+/* Selection */
+
+::selection {
+  background: rgba(212, 176, 106, 0.35);
+  color: white;
+}
+
+/* Smooth image rendering */
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Better focus */
+
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Snow */
+
+.snowflake {
+  top: -12px;
+  border-radius: 9999px;
+  will-change: transform;
   animation-name: snowfall;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -21,25 +55,36 @@ body {
 
 @keyframes snowfall {
   from {
-    transform: translateY(-10vh);
+    transform: translate3d(0, -10vh, 0);
   }
 
   to {
-    transform: translateY(110vh);
+    transform: translate3d(0, 110vh, 0);
   }
-}.snowflake {
-  top: -10px;
-  animation-name: snowfall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
 }
 
-@keyframes snowfall {
-  from {
-    transform: translateY(-10vh);
-  }
+/* Luxury scrollbar */
 
-  to {
-    transform: translateY(110vh);
-  }
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #102118;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 176, 106, 0.45);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 176, 106, 0.75);
+}
+
+/* Smooth animations */
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

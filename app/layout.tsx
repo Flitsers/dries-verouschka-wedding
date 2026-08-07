@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
@@ -14,8 +14,46 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Dries & Verouschka",
-  description: "Winter Wedding 2026",
+  title: "Dries & Verouschka | 19 december 2026",
+  description:
+    "Een winterse dag om nooit te vergeten. Ontdek alle informatie over de trouwdag van Dries & Verouschka op 19 december 2026.",
+  applicationName: "Dries & Verouschka",
+  keywords: [
+    "Dries en Verouschka",
+    "trouwdag",
+    "bruiloft",
+    "winterbruiloft",
+    "19 december 2026",
+  ],
+  authors: [{ name: "Dries & Verouschka" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "nl_BE",
+    siteName: "Dries & Verouschka",
+    title: "Dries & Verouschka",
+    description: "19 december 2026 · Onze trouwdag",
+    images: [
+      {
+        url: "/images/hero.jpg",
+        alt: "Dries & Verouschka · 19 december 2026",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dries & Verouschka",
+    description: "19 december 2026 · Onze trouwdag",
+    images: ["/images/hero.jpg"],
+  },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#10261d",
 };
 
 export default function RootLayout({
@@ -28,7 +66,7 @@ export default function RootLayout({
       lang="nl"
       className={`${inter.variable} ${cormorant.variable}`}
     >
-      <body id="top">
+      <body>
         {children}
       </body>
     </html>

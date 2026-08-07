@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { submitRSVP } from "@/app/actions/rsvp";
+import RSVPWizard from "@/components/rsvp/RSVPWizard";
 
 type Props = {
   params: Promise<{
@@ -22,16 +22,17 @@ export default async function RSVPPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-[#183328] px-6 py-24 text-white">
+    <main className="relative isolate min-h-screen overflow-hidden bg-[#183328] px-5 py-16 text-white sm:px-6 sm:py-24">
+      <div className="pointer-events-none absolute -right-40 top-1/4 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
 
-      <div className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-white/5 p-12 backdrop-blur">
+      <div className="relative z-10 mx-auto max-w-3xl rounded-[2rem] border border-[#d4b06a]/20 bg-gradient-to-br from-white/[0.09] to-white/[0.03] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl sm:p-8 md:p-12">
 
-        <p className="uppercase tracking-[0.5em] text-[#d4b06a]">
+        <p className="text-xs font-semibold uppercase tracking-[0.5em] text-[#d4b06a]">
           RSVP
         </p>
 
         <h1
-          className="mt-5 text-6xl"
+          className="mt-4 text-5xl md:text-6xl"
           style={{
             fontFamily: "var(--font-cormorant)",
           }}
@@ -40,7 +41,7 @@ export default async function RSVPPage({ params }: Props) {
         </h1>
 
         <h2
-          className="mt-10 text-5xl"
+          className="mt-10 text-4xl md:text-5xl"
           style={{
             fontFamily: "var(--font-cormorant)",
           }}
@@ -48,73 +49,16 @@ export default async function RSVPPage({ params }: Props) {
           {data.family_name}
         </h2>
 
-        <p className="mt-6 text-xl text-gray-300">
-          Jullie zijn uitgenodigd met
-        </p>
+        <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/15 px-5 py-3 text-gray-300">
+          <span className="font-serif text-2xl text-[#d4b06a]">{data.allowed_guests}</span>
+          <span>personen uitgenodigd</span>
+        </div>
 
-        <p className="mt-2 text-6xl font-bold text-[#d4b06a]">
-          {data.allowed_guests}
-        </p>
-
-        <p className="text-xl text-gray-300">
-          personen
-        </p>
-
-        <form
-          action={submitRSVP}
-          className="mt-12 space-y-6"
-        >
-
-          <input
-            type="hidden"
-            name="code"
-            value={data.code}
-          />
-
-          <div>
-
-            <label className="text-sm text-gray-300">
-              Aanwezigheid
-            </label>
-
-            <select
-              name="attending"
-              className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4 text-white"
-            >
-              <option value="Ja">
-                Wij komen graag
-              </option>
-
-              <option value="Nee">
-                Helaas kunnen wij niet komen
-              </option>
-
-            </select>
-
-          </div>
-
-          <div>
-
-            <label className="text-sm text-gray-300">
-              Bericht of dieetwensen
-            </label>
-
-            <textarea
-              name="message"
-              rows={5}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4 text-white"
-              placeholder="Laat hier iets weten..."
-            />
-
-          </div>
-
-          <button
-            className="rounded-full border border-[#d4b06a] px-10 py-4 transition hover:bg-[#d4b06a] hover:text-[#183328]"
-          >
-            Bevestigen
-          </button>
-
-        </form>
+        <RSVPWizard
+          code={data.code}
+          familyName={data.family_name}
+          allowedGuests={data.allowed_guests}
+        />
 
       </div>
 

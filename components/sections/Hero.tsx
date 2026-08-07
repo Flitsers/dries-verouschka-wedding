@@ -2,125 +2,131 @@ import Reveal from "@/components/ui/Reveal";
 import Countdown from "./Countdown";
 import Button from "../ui/Button";
 import { wedding } from "@/lib/wedding";
+import { MapPin } from "lucide-react";
+
+const snowflakes = Array.from({ length: 45 }, (_, index) => ({
+  id: index,
+  left: ((index * 37) % 100) + "%",
+  size: 3 + (index % 5),
+  duration: 10 + (index % 7),
+  delay: (index % 8) * 0.8,
+  opacity: 0.35 + (index % 4) * 0.15,
+}));
 
 export default function Hero() {
-  const snowflakes = Array.from({ length: 45 });
-
   return (
     <section
       id="top"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-cover bg-center"
+      className="relative flex min-h-[700px] items-center justify-center overflow-hidden bg-cover bg-[position:58%_center] sm:min-h-[720px] sm:bg-center md:min-h-screen"
       style={{
         backgroundImage: "url('/images/hero.jpg')",
       }}
     >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/45" />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/55" />
+      {/* Luxury gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#07150f]/80 via-black/15 to-[#183328]" />
 
+      {/* Subtle vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.45)_100%)]" />
 
-      {/* Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-[#183328]" />
+      {/* Ambient light */}
+      <div className="pointer-events-none absolute -right-32 top-1/4 h-72 w-72 rounded-full bg-[#d4b06a]/10 blur-3xl animate-pulse md:h-96 md:w-96" />
 
-
-      {/* Falling snow */}
+      {/* Snow */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {snowflakes.map((_, index) => (
+        {snowflakes.map((flake) => (
           <span
-            key={index}
-            className="snowflake absolute rounded-full bg-white/80"
+            key={flake.id}
+            className="snowflake absolute rounded-full bg-white"
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${Math.random() * 8 + 8}s`,
-              animationDelay: `${Math.random() * 8}s`,
-              width: `${Math.random() * 5 + 3}px`,
-              height: `${Math.random() * 5 + 3}px`,
-              opacity: Math.random() * 0.5 + 0.4,
+              left: flake.left,
+              width: `${flake.size}px`,
+              height: `${flake.size}px`,
+              animationDuration: `${flake.duration}s`,
+              animationDelay: `${flake.delay}s`,
+              opacity: flake.opacity,
             }}
           />
         ))}
-
       </div>
 
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-5 pb-16 pt-24 text-center text-white sm:px-8 sm:pb-20 sm:pt-32 md:pt-36">
+        <div className="w-full">
+          <Reveal>
+            <div className="flex w-full flex-col items-center">
+              <p className="mb-6 inline-flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.55em] text-[#d4b06a] sm:mb-8 sm:tracking-[0.75em] md:text-xs">
+                <span className="h-px w-7 bg-[#d4b06a]/75" />
+                Winter Wedding
+                <span className="h-px w-7 bg-[#d4b06a]/75" />
+              </p>
 
+              <h1
+                className="w-full max-w-[26rem] leading-[0.84] tracking-tight drop-shadow-[0_10px_35px_rgba(0,0,0,0.65)] sm:max-w-none"
+                style={{
+                  fontFamily: "var(--font-cormorant)",
+                }}
+              >
+                <span className="block break-words text-[clamp(2.25rem,9.5vw,8.125rem)] font-light">
+                  {wedding.couple.groom}
+                </span>
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 text-center text-white">
+                <span className="my-3 block text-4xl text-[#d4b06a] sm:my-5 sm:text-6xl md:text-8xl">
+                  &
+                </span>
 
-        <Reveal>
+                <span className="block break-words text-[clamp(2.25rem,9.5vw,8.125rem)] font-light">
+                  {wedding.couple.bride}
+                </span>
+              </h1>
+            </div>
+          </Reveal>
+        </div>
 
-          <p className="mb-8 text-sm uppercase tracking-[0.7em] text-[#d4b06a]">
-            Winter Wedding
-          </p>
+        <div className="w-full">
+          <Reveal>
+            <div className="flex w-full flex-col items-center">
+              <div className="mt-8 flex w-full items-center justify-center gap-3 text-white/90 sm:mt-10 md:gap-4">
+                <div className="h-px w-6 bg-[#d4b06a] sm:w-10" />
+                <p className="whitespace-nowrap text-xs font-medium uppercase tracking-[0.2em] sm:text-sm sm:tracking-[0.35em] md:text-xl">
+                  {wedding.event.dateText}
+                </p>
+                <div className="h-px w-6 bg-[#d4b06a] sm:w-10" />
+              </div>
 
+              <p className="mt-4 inline-flex max-w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-black/15 px-4 py-2 text-center text-xs text-white/80 backdrop-blur-sm sm:mt-5 sm:text-sm">
+                <MapPin size={15} className="text-[#d4b06a]" aria-hidden="true" />
+                {wedding.venue.name}, {wedding.venue.city}
+              </p>
 
-          <h1
-            className="leading-none drop-shadow-2xl"
-            style={{
-              fontFamily: "var(--font-cormorant)",
-            }}
-          >
+              <div className="mt-6 sm:mt-8 md:mt-10">
+                <Countdown />
+              </div>
 
-            <span className="block text-7xl font-light md:text-[130px]">
-              {wedding.couple.groom}
-            </span>
+              <div className="mt-8 flex w-full max-w-sm flex-col items-stretch justify-center gap-3 sm:mt-11 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4 [&>a]:inline-flex [&>a]:justify-center [&>a]:shadow-[0_14px_35px_rgba(0,0,0,0.25)] sm:[&>a]:min-w-52">
+                <Button href="#planning">Ontdek onze dag</Button>
 
-
-            <span className="my-5 block text-6xl text-[#d4b06a] md:text-8xl">
-              &
-            </span>
-
-
-            <span className="block text-7xl font-light md:text-[130px]">
-              {wedding.couple.bride}
-            </span>
-
-          </h1>
-
-        </Reveal>
-
-
-
-        <Reveal>
-
-          <p className="mt-10 text-xl tracking-[0.15em] text-white/90">
-            {wedding.event.dateText}
-          </p>
-
-
-          <Countdown />
-
-
-          <div className="mt-12">
-            <Button href="#planning">
-              Bekijk onze dag
-            </Button>
-          </div>
-
-
-        </Reveal>
-
+                <Button href="#rsvp" variant="secondary">
+                  Bevestig je aanwezigheid
+                </Button>
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </div>
 
-
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70">
-
+      <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 text-white/70 sm:block">
         <div className="flex flex-col items-center gap-3">
-
-          <span className="text-xs uppercase tracking-[0.5em]">
+          <span className="text-[11px] uppercase tracking-[0.6em]">
             Scroll
           </span>
 
-          <div className="h-10 w-px bg-[#d4b06a]" />
-
+          <div className="relative h-12 w-px overflow-hidden bg-white/20">
+            <span className="absolute left-0 top-0 h-4 w-px animate-pulse bg-[#d4b06a]" />
+          </div>
         </div>
-
       </div>
-
-
     </section>
   );
 }

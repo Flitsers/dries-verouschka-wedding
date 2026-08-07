@@ -10,12 +10,12 @@ export default function SectionTitle({
   return (
     <div className="text-center">
 
-      <p className="uppercase tracking-[0.5em] text-[#d4b06a]">
+      <p className="text-xs font-semibold uppercase tracking-[0.5em] text-[#d4b06a]">
         {eyebrow}
       </p>
 
       <h2
-        className="mt-4 text-6xl text-white"
+        className="mt-4 text-5xl text-white md:text-7xl"
         style={{ fontFamily: "var(--font-cormorant)" }}
       >
         {title}

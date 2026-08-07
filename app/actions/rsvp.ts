@@ -4,29 +4,43 @@ import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export async function submitRSVP(formData: FormData) {
-  const code = formData.get("code") as string;
+  const code = formData.get("code");
+  const attendingGuestsValue = formData.get("attending_guests");
+  const attendingGuests = Number(attendingGuestsValue);
 
-  const attending = formData.get("attending") as string;
+  if (
+    typeof code !== "string" ||
+    !code ||
+    typeof attendingGuestsValue !== "string" ||
+    !attendingGuestsValue.trim()
+  ) {
+    throw new Error("Ongeldige RSVP-gegevens.");
+  }
 
-  const message = formData.get("message") as string;
+  const { data: invite, error: inviteLookupError } = await supabase
+    .from("invites")
+    .select("allowed_guests")
+    .eq("code", code)
+    .single();
 
-  const { error } = await supabase
-    .from("guests")
-    .update({
-      attending,
-      message,
-    })
-    .eq("invite_code", code);
+  if (inviteLookupError || !invite) {
+    throw new Error("RSVP laden mislukt.");
+  }
 
-  if (error) {
-    console.error(error);
-    throw new Error("RSVP opslaan mislukt");
+  if (
+    (invite.allowed_guests !== 1 && invite.allowed_guests !== 2) ||
+    !Number.isInteger(attendingGuests) ||
+    attendingGuests < 0 ||
+    attendingGuests > invite.allowed_guests
+  ) {
+    throw new Error("Ongeldige RSVP-gegevens.");
   }
 
   const { error: inviteError } = await supabase
     .from("invites")
     .update({
       answered: true,
+      attending_guests: attendingGuests,
     })
     .eq("code", code);
 
