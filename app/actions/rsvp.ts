@@ -1,39 +1,39 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export async function submitRSVP(formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const attending = formData.get("attending") as string;
-  const guestsCount = Number(
-    formData.get("guests_count")
-  );
-  const message = formData.get("message") as string;
+  const code = formData.get("code") as string;
 
+  const attending = formData.get("attending") as string;
+
+  const message = formData.get("message") as string;
 
   const { error } = await supabase
     .from("guests")
-    .insert([
-      {
-        name,
-        email,
-        attending,
-        guests_count: guestsCount,
-        message,
-      },
-    ]);
-
+    .update({
+      attending,
+      message,
+    })
+    .eq("invite_code", code);
 
   if (error) {
     console.error(error);
-    throw new Error(
-      "RSVP opslaan mislukt"
-    );
+    throw new Error("RSVP opslaan mislukt");
   }
 
+  const { error: inviteError } = await supabase
+    .from("invites")
+    .update({
+      answered: true,
+    })
+    .eq("code", code);
 
-  return {
-    success: true,
-  };
+  if (inviteError) {
+    console.error(inviteError);
+    throw new Error("Uitnodiging kon niet bijgewerkt worden.");
+  }
+
+  redirect(`/i/${code}`);
 }
