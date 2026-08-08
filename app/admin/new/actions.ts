@@ -2,7 +2,8 @@
 
 import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type CreateInviteState = {
   error: string | null;
@@ -12,6 +13,8 @@ export async function createInvite(
   _previousState: CreateInviteState,
   formData: FormData,
 ): Promise<CreateInviteState> {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
   const familyName = String(formData.get("family_name") ?? "").trim();
   const allowedGuests = Number(formData.get("allowed_guests"));
   const email = String(formData.get("email") ?? "").trim();

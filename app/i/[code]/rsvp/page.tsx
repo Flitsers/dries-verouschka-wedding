@@ -58,6 +58,7 @@ export default async function RSVPPage({ params }: Props) {
           code={data.code}
           familyName={data.family_name}
           allowedGuests={data.allowed_guests}
+          initialAttendingGuests={data.answered ? data.attending_guests : null}
         />
 
       </div>

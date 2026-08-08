@@ -1,11 +1,14 @@
 import InviteDashboard from "@/components/admin/InviteDashboard";
-import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export default async function AdminPage() {
-  const [{ data: inviteData }, { data: guestData }] = await Promise.all([
-    supabase.from("invites").select("*").order("family_name"),
-    supabase.from("guests").select("invite_code, attending"),
-  ]);
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
+  const { data: inviteData } = await supabase
+    .from("invites")
+    .select("*")
+    .order("family_name");
 
-  return <InviteDashboard invites={inviteData ?? []} guests={guestData ?? []} />;
+  return <InviteDashboard invites={inviteData ?? []} />;
 }

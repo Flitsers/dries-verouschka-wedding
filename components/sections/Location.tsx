@@ -60,7 +60,7 @@ export default function Location() {
               </div>
 
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Kattebroekstraat%2C%20Dilbeek"
+                href="https://maps.app.goo.gl/JL6naH5Aq5r98jfZ6"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-10 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#d4b06a] px-8 py-4 transition duration-300 hover:-translate-y-0.5 hover:bg-[#d4b06a] hover:text-[#183328] hover:shadow-[0_12px_30px_rgba(212,176,106,0.2)] sm:w-fit"

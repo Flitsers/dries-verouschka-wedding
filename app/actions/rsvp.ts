@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 export async function submitRSVP(formData: FormData) {
@@ -49,5 +50,7 @@ export async function submitRSVP(formData: FormData) {
     throw new Error("Uitnodiging kon niet bijgewerkt worden.");
   }
 
+  revalidatePath(`/i/${code}`);
+  revalidatePath(`/i/${code}/rsvp`);
   redirect(`/i/${code}`);
 }

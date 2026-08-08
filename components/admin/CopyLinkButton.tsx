@@ -25,7 +25,8 @@ export default function CopyLinkButton({ code }: Props) {
   return (
     <button
       onClick={copy}
-      className="flex items-center gap-2 rounded-full border border-[#d4b06a] px-8 py-3 transition hover:bg-[#d4b06a] hover:text-[#183328]"
+      type="button"
+      className="flex w-full items-center justify-center gap-2 rounded-full border border-[#d4b06a] px-5 py-3 text-sm transition hover:bg-[#d4b06a] hover:text-[#183328]"
     >
       {copied ? <Check size={18} /> : <Copy size={18} />}
 

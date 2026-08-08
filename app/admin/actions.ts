@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/admin-auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type DeleteInviteState = {
   error: string | null;
@@ -12,6 +13,8 @@ export async function deleteInvite(
   _previousState: DeleteInviteState,
   formData: FormData,
 ): Promise<DeleteInviteState> {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
   const inviteId = formData.get("invite_id");
 
   if (typeof inviteId !== "string" || !inviteId) {

@@ -4,7 +4,7 @@ import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { wedding } from "@/lib/wedding";
 
-const mapsUrl = "https://www.google.com/maps/search/?api=1&query=Kattebroekstraat%2C%20Dilbeek";
+const mapsUrl = "https://maps.app.goo.gl/JL6naH5Aq5r98jfZ6";
 
 export default function WeddingLocation() {
   return (
