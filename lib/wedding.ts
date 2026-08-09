@@ -97,6 +97,7 @@ export const wedding = {
       address: "E40 Richting Gent",
       postalCity: "1702 Groot-Bijgaarden",
       distance: "5 km",
+      website: "https://all.accor.com/hotel/A241/index.nl.shtml",
     },
     {
       name: "B&B Onsemhoeve",
