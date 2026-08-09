@@ -1,15 +1,24 @@
 import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
-import { wedding } from "@/lib/wedding";
+import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
 
-const practicalItems = [
+export type PracticalItem = {
+  title: string;
+  text: string;
+};
+
+type Props = {
+  items?: readonly PracticalItem[];
+};
+
+const defaultPracticalItems: PracticalItem[] = [
   {
     title: "Parking",
     text: "Er is parking voorzien bij de locatie. Meer praktische informatie volgt binnenkort.",
   },
   {
     title: "Aankomstuur",
-    text: "De ceremonie start om 16:00. We vragen onze gasten tijdig aanwezig te zijn.",
+    text: `De ceremonie start om ${getWeddingScheduleTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
   },
   {
     title: "Dresscode",
@@ -33,7 +42,7 @@ const practicalItems = [
   },
 ];
 
-export default function WeddingPractical() {
+export default function WeddingPractical({ items = defaultPracticalItems }: Props) {
   return (
     <section id="praktisch" className="relative isolate overflow-hidden bg-[#183328] py-28 text-white md:py-36">
       <div className="pointer-events-none absolute -left-48 bottom-0 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
@@ -49,7 +58,7 @@ export default function WeddingPractical() {
         </Reveal>
 
         <div className="mt-20 grid gap-x-12 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
-          {practicalItems.map((item, index) => (
+          {items.map((item, index) => (
             <Reveal key={item.title}>
               <article className="group border-t border-white/10 py-8 md:py-10">
                 <div className="flex items-baseline justify-between gap-4">

@@ -1,8 +1,6 @@
 import Reveal from "@/components/ui/Reveal";
-import Countdown from "./Countdown";
 import Button from "../ui/Button";
 import { wedding } from "@/lib/wedding";
-import { MapPin } from "lucide-react";
 
 const snowflakes = Array.from({ length: 45 }, (_, index) => ({
   id: index,
@@ -95,20 +93,11 @@ export default function Hero() {
                 <div className="h-px w-6 bg-[#d4b06a] sm:w-10" />
               </div>
 
-              <p className="mt-4 inline-flex max-w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-black/15 px-4 py-2 text-center text-xs text-white/80 backdrop-blur-sm sm:mt-5 sm:text-sm">
-                <MapPin size={15} className="text-[#d4b06a]" aria-hidden="true" />
-                {wedding.venue.name}, {wedding.venue.city}
-              </p>
-
-              <div className="mt-6 sm:mt-8 md:mt-10">
-                <Countdown />
-              </div>
-
               <div className="mt-8 flex w-full max-w-sm flex-col items-stretch justify-center gap-3 sm:mt-11 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4 [&>a]:inline-flex [&>a]:justify-center [&>a]:shadow-[0_14px_35px_rgba(0,0,0,0.25)] sm:[&>a]:min-w-52">
-                <Button href="#planning">Ontdek onze dag</Button>
+                <Button href="#verhaal">Ons verhaal</Button>
 
-                <Button href="#rsvp" variant="secondary">
-                  Bevestig je aanwezigheid
+                <Button href="#uitnodiging" variant="secondary">
+                  Persoonlijke uitnodiging
                 </Button>
               </div>
             </div>

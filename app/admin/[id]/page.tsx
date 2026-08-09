@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import CopyLinkButton from "@/components/admin/CopyLinkButton";
 import AdminRsvpForm from "@/components/admin/AdminRsvpForm";
 import DeleteInviteButton from "@/components/admin/DeleteInviteButton";
+import InvitationAccessForm from "@/components/admin/InvitationAccessForm";
 import PrintInvitationSummary, { PrintButton } from "@/components/admin/PrintInvitationSummary";
 import QRCodeCard from "@/components/admin/QRCodeCard";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -32,9 +33,15 @@ async function updateInvitationType(formData: FormData) {
     throw new Error("Ongeldig type uitnodiging.");
   }
 
+  const includesStadhuis =
+    invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
+
   const { error } = await supabase
     .from("invites")
-    .update({ invitation_type: invitationType })
+    .update({
+      invitation_type: invitationType,
+      includes_stadhuis: includesStadhuis,
+    })
     .eq("id", id);
 
   if (error) {
@@ -75,6 +82,7 @@ export default async function InviteDetails({ params }: Props) {
   const invitationType = typeof data.invitation_type === "string" && data.invitation_type in invitationTypes
     ? data.invitation_type as keyof typeof invitationTypes
     : "full_day";
+  const includesStadhuis = invitationType === "full_day" && data.includes_stadhuis === true;
   const attendingGuests = typeof data.attending_guests === "number" ? data.attending_guests : null;
   const attendanceLabel = !data.answered
     ? "Nog niet geantwoord"
@@ -114,6 +122,11 @@ export default async function InviteDetails({ params }: Props) {
             <span className={`inline-flex rounded-full border px-3 py-1.5 text-xs font-medium ${attendanceBadge}`}>
               {attendanceLabel}
             </span>
+            {includesStadhuis && (
+              <span className="inline-flex rounded-full border border-[#d4b06a]/25 bg-[#d4b06a]/10 px-3 py-1.5 text-xs font-medium text-[#f5d998]">
+                Stadhuis
+              </span>
+            )}
           </div>
         </header>
 
@@ -151,15 +164,12 @@ export default async function InviteDetails({ params }: Props) {
             <section className="rounded-3xl border border-white/10 bg-white/[0.05] p-6" aria-labelledby="type-heading">
               <h2 id="type-heading" className="text-2xl" style={{ fontFamily: "var(--font-cormorant)" }}>Uitnodigingstype</h2>
               <p className="mt-2 text-sm text-white/50">Bepaal tot welke onderdelen van de dag deze uitnodiging toegang geeft.</p>
-              <form action={updateInvitationType} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <input type="hidden" name="id" value={data.id} />
-                <select name="invitation_type" defaultValue={invitationType} className="w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none focus:border-[#d4b06a] sm:max-w-xs">
-                  <option value="full_day">Volledige dag</option>
-                  <option value="reception_plus">Vanaf receptie</option>
-                  <option value="evening_only">Enkel avondfeest</option>
-                </select>
-                <button className="w-full rounded-full border border-[#d4b06a] px-5 py-3 text-sm text-[#d4b06a] transition hover:bg-[#d4b06a] hover:text-[#183328] sm:w-auto">Opslaan</button>
-              </form>
+              <InvitationAccessForm
+                action={updateInvitationType}
+                inviteId={data.id}
+                initialInvitationType={invitationType}
+                initialIncludesStadhuis={includesStadhuis}
+              />
             </section>
           </div>
 

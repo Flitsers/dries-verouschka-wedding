@@ -2,15 +2,14 @@ import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { wedding } from "@/lib/wedding";
 
-const placeholderGuidelines = [
+const guidelines = [
   "Formal / feestelijk",
   "Winter passend",
   "Elegante avondkleding",
   "Comfortabel genoeg voor diner en dans",
 ];
 
-// Placeholder suggestions: replace these with the couple's final colour guidance.
-const placeholderColorSuggestions = [
+const colorSuggestions = [
   { name: "Donkergroen", swatchClass: "bg-[#183328]" },
   { name: "Champagne", swatchClass: "bg-[#d4b06a]" },
   { name: "Bordeaux", swatchClass: "bg-[#5b2634]" },
@@ -18,7 +17,15 @@ const placeholderColorSuggestions = [
   { name: "Warme neutrale tinten", swatchClass: "bg-[#9a8066]" },
 ];
 
-export default function WeddingDresscode() {
+type Props = {
+  includeDinnerReference?: boolean;
+};
+
+export default function WeddingDresscode({ includeDinnerReference = true }: Props) {
+  const visibleGuidelines = includeDinnerReference
+    ? guidelines
+    : guidelines.filter((guideline) => !guideline.includes("diner"));
+
   return (
     <section id="dresscode" className="relative isolate overflow-hidden bg-[#183328] py-28 text-white md:py-36">
       <div className="pointer-events-none absolute -right-40 top-1/3 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
@@ -38,11 +45,11 @@ export default function WeddingDresscode() {
                 {wedding.dresscode}
               </p>
               <p className="mt-7 max-w-xl text-xl leading-relaxed text-white/75 md:text-2xl" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Placeholder — voeg hier later een korte, persoonlijke toelichting toe op de gewenste sfeer en stijl.
+                Warme kleuren, elegante outfits en een feestelijke winterse sfeer.
               </p>
 
               <ul className="mt-10 divide-y divide-white/10 border-y border-white/10" aria-label="Dresscode richtlijnen">
-                {placeholderGuidelines.map((guideline, index) => (
+                {visibleGuidelines.map((guideline, index) => (
                   <li key={guideline} className="flex items-center justify-between gap-6 py-4 text-white/75">
                     <span>{guideline}</span>
                     <span className="text-[10px] font-semibold tracking-[0.3em] text-[#d4b06a]/70">
@@ -60,11 +67,11 @@ export default function WeddingDresscode() {
                 Kleurinspiratie
               </p>
               <p className="mt-5 max-w-md leading-relaxed text-white/60">
-                Placeholder-suggesties voor sfeer en inspiratie — geen verplichte kleuren.
+                Sfeerinspiratie voor jullie outfit — geen verplichte kleuren.
               </p>
 
               <ul className="mt-10 space-y-4" aria-label="Kleurinspiratie, niet verplicht">
-                {placeholderColorSuggestions.map((color) => (
+                {colorSuggestions.map((color) => (
                   <li key={color.name} className="flex items-center gap-4 border-b border-white/10 pb-4 last:border-0">
                     <span className={`h-9 w-9 rounded-full border border-white/15 shadow-inner ${color.swatchClass}`} aria-hidden="true" />
                     <span className="text-lg text-white/80" style={{ fontFamily: "var(--font-cormorant)" }}>

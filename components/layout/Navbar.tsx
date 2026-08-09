@@ -1,23 +1,43 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
-const links = [
+export type NavigationLink = {
+  name: string;
+  href: string;
+};
+
+type Props = {
+  links?: readonly NavigationLink[];
+  ariaLabel?: string;
+};
+
+const publicLinks = [
   { name: "Ons verhaal", href: "#verhaal" },
-  { name: "Onze dag", href: "#planning" },
-  { name: "Locatie", href: "#locatie" },
-  { name: "Praktisch", href: "#praktisch" },
-  { name: "Hotels", href: "#hotels" },
-  { name: "Dresscode", href: "#dresscode" },
-  { name: "FAQ", href: "#faq" },
-  { name: "RSVP", href: "#rsvp" },
+  { name: "Persoonlijke uitnodiging", href: "#uitnodiging" },
 ];
 
-export default function Navbar() {
+const subscribeToHydration = () => () => {};
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
+
+export default function Navbar({
+  links = publicLinks,
+  ariaLabel = "Hoofdnavigatie",
+}: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
+
+  const renderedScrolled = hydrated && scrolled;
+  const renderedOpen = hydrated && open;
+  const renderedActiveSection = hydrated ? activeSection : null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,24 +87,21 @@ export default function Navbar() {
     sections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, []);
+  }, [links]);
 
   return (
     <header
       className={`fixed left-0 top-0 z-50 w-full transition-all duration-500 ${
-        scrolled
+        renderedScrolled
           ? "border-b border-white/10 bg-[#10261d]/80 shadow-[0_10px_35px_rgba(0,0,0,0.18)] backdrop-blur-xl"
           : "bg-transparent"
       }`}
     >
-      <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-white transition-all duration-500 md:px-8 md:py-6">
+      <nav aria-label={ariaLabel} className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-white transition-all duration-500 md:px-8 md:py-6">
 
         <a
           href="#top"
-          className="group inline-flex items-center gap-2 text-3xl leading-none transition-colors hover:text-[#d4b06a]"
-          style={{
-            fontFamily: "var(--font-cormorant)",
-          }}
+          className="group inline-flex items-center gap-2 text-3xl leading-none transition-colors hover:text-[#d4b06a] [font-family:var(--font-cormorant)]"
           onClick={() => setOpen(false)}
         >
           D <span className="text-[#d4b06a] transition-transform duration-300 group-hover:rotate-12">&</span> V
@@ -95,7 +112,7 @@ export default function Navbar() {
         <div className="hidden items-center gap-5 2xl:gap-7 xl:flex">
 
           {links.map((link) => {
-            const isActive = activeSection === link.href.slice(1);
+            const isActive = renderedActiveSection === link.href.slice(1);
 
             return (
               <a
@@ -125,22 +142,22 @@ export default function Navbar() {
         {/* Mobile button */}
         <button
           className={`rounded-full border p-2.5 transition duration-300 xl:hidden ${
-            open
+            renderedOpen
               ? "border-[#d4b06a] bg-[#d4b06a] text-[#183328]"
               : "border-white/25 bg-black/10 text-white backdrop-blur-sm hover:border-[#d4b06a] hover:text-[#d4b06a]"
           }`}
           onClick={() => setOpen((current) => !current)}
-          aria-label={open ? "Menu sluiten" : "Menu openen"}
-          aria-expanded={open}
+          aria-label={renderedOpen ? "Menu sluiten" : "Menu openen"}
+          aria-expanded={renderedOpen}
           aria-controls="mobile-navigation"
         >
-          {open ? <X size={21} /> : <Menu size={21} />}
+          {renderedOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
 
 
       </nav>
 
-      {open && (
+      {renderedOpen && (
         <button
           type="button"
           aria-label="Menu sluiten"
@@ -152,10 +169,10 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div
         id="mobile-navigation"
-        aria-hidden={!open}
-        inert={!open}
+        aria-hidden={!renderedOpen}
+        inert={!renderedOpen}
         className={`fixed right-0 top-0 z-10 h-screen w-[min(22rem,88vw)] overflow-y-auto border-l border-white/10 bg-[#10261d]/95 px-8 pb-8 pt-28 shadow-[-20px_0_50px_rgba(0,0,0,0.3)] backdrop-blur-2xl transition-transform duration-500 ease-out xl:hidden ${
-          open
+          renderedOpen
             ? "translate-x-0"
             : "translate-x-full"
         }`}
@@ -167,7 +184,7 @@ export default function Navbar() {
           </p>
 
           {links.map((link) => {
-            const isActive = activeSection === link.href.slice(1);
+            const isActive = renderedActiveSection === link.href.slice(1);
 
             return (
               <a
@@ -175,14 +192,11 @@ export default function Navbar() {
                 href={link.href}
                 aria-current={isActive ? "location" : undefined}
                 onClick={() => setOpen(false)}
-                className={`group flex items-center justify-between border-b border-white/10 py-3.5 text-2xl transition sm:py-4 sm:text-3xl ${
+                className={`group flex items-center justify-between border-b border-white/10 py-3.5 text-2xl transition sm:py-4 sm:text-3xl [font-family:var(--font-cormorant)] ${
                   isActive
                     ? "pl-2 text-[#d4b06a]"
                     : "text-white hover:pl-2 hover:text-[#d4b06a]"
                 }`}
-                style={{
-                  fontFamily: "var(--font-cormorant)",
-                }}
               >
                 {link.name}
                 <span

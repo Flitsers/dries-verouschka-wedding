@@ -1,3 +1,19 @@
+export type WeddingScheduleTitle =
+  | "Stadhuis"
+  | "Ceremonie"
+  | "Dagsreceptie"
+  | "Diner"
+  | "Avondreceptie"
+  | "Avondfeest"
+  | "Midnight snack"
+  | "Einde";
+
+export type WeddingScheduleEvent = {
+  title: WeddingScheduleTitle;
+  time?: string;
+  description?: string;
+};
+
 export const wedding = {
   couple: {
     groom: "Dries Van Handenhove",
@@ -6,7 +22,7 @@ export const wedding = {
   },
 
   event: {
-    date: new Date("2026-12-19T16:00:00"),
+    date: "2026-12-19",
     dateText: "19 december 2026",
   },
 
@@ -18,13 +34,17 @@ export const wedding = {
 
   schedule: [
     {
-      time: "16:00",
-      title: "Ceremonie",
-      description: "Onze ceremonie start stipt om 16:00.",
+      time: "13:00",
+      title: "Stadhuis",
     },
     {
-      time: "17:00",
-      title: "Receptie",
+      time: "16:30",
+      title: "Ceremonie",
+      description: "Onze ceremonie start stipt om 16:30.",
+    },
+    {
+      time: "18:00",
+      title: "Dagsreceptie",
       description: "We klinken samen op een prachtige dag.",
     },
     {
@@ -33,16 +53,23 @@ export const wedding = {
       description: "Een feestelijk diner met familie en vrienden.",
     },
     {
-      time: "22:00",
-      title: "Feest",
+      title: "Avondreceptie",
+    },
+    {
+      time: "22:00–23:00",
+      title: "Avondfeest",
       description: "De dansvloer gaat open!",
+    },
+    {
+      time: "00:30",
+      title: "Midnight snack",
     },
     {
       time: "05:00",
       title: "Einde",
       description: "Bedankt om onze dag onvergetelijk te maken.",
     },
-  ],
+  ] satisfies WeddingScheduleEvent[],
 
   dresscode: "Christmas Chique",
 
@@ -56,3 +83,23 @@ export const wedding = {
     },
   ],
 };
+
+export function getWeddingScheduleEvent(title: WeddingScheduleTitle) {
+  const event = wedding.schedule.find((scheduleEvent) => scheduleEvent.title === title);
+
+  if (!event) {
+    throw new Error(`Ontbrekend centraal planningsmoment: ${title}`);
+  }
+
+  return event as WeddingScheduleEvent;
+}
+
+export function getWeddingScheduleTime(title: WeddingScheduleTitle) {
+  const event = getWeddingScheduleEvent(title);
+
+  if (!event.time) {
+    throw new Error(`Ontbrekend centraal tijdstip: ${title}`);
+  }
+
+  return event.time;
+}

@@ -4,28 +4,47 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
-export async function submitRSVP(formData: FormData) {
+export type SubmitRsvpState = {
+  error: string | null;
+};
+
+export async function submitRSVP(
+  _previousState: SubmitRsvpState,
+  formData: FormData,
+): Promise<SubmitRsvpState> {
   const code = formData.get("code");
   const attendingGuestsValue = formData.get("attending_guests");
-  const attendingGuests = Number(attendingGuestsValue);
 
   if (
     typeof code !== "string" ||
-    !code ||
+    !code.trim() ||
     typeof attendingGuestsValue !== "string" ||
-    !attendingGuestsValue.trim()
+    !["0", "1", "2"].includes(attendingGuestsValue)
   ) {
-    throw new Error("Ongeldige RSVP-gegevens.");
+    return { error: "De RSVP-gegevens zijn ongeldig. Controleer jullie antwoord en probeer opnieuw." };
   }
 
-  const { data: invite, error: inviteLookupError } = await supabase
-    .from("invites")
-    .select("allowed_guests")
-    .eq("code", code)
-    .single();
+  const normalizedCode = code.trim();
+  const attendingGuests = Number(attendingGuestsValue);
 
-  if (inviteLookupError || !invite) {
-    throw new Error("RSVP laden mislukt.");
+  let invite: { allowed_guests: number } | null;
+
+  try {
+    const { data, error } = await supabase
+      .from("invites")
+      .select("allowed_guests")
+      .eq("code", normalizedCode)
+      .single();
+
+    if (error || !data) {
+      console.error("Public RSVP lookup failed", error);
+      return { error: "We konden jullie uitnodiging niet laden. Probeer het straks opnieuw." };
+    }
+
+    invite = data;
+  } catch (error) {
+    console.error("Public RSVP lookup failed", error);
+    return { error: "We konden jullie uitnodiging niet laden. Probeer het straks opnieuw." };
   }
 
   if (
@@ -34,23 +53,30 @@ export async function submitRSVP(formData: FormData) {
     attendingGuests < 0 ||
     attendingGuests > invite.allowed_guests
   ) {
-    throw new Error("Ongeldige RSVP-gegevens.");
+    return { error: "Het aantal aanwezigen past niet bij deze uitnodiging." };
   }
 
-  const { error: inviteError } = await supabase
-    .from("invites")
-    .update({
-      answered: true,
-      attending_guests: attendingGuests,
-    })
-    .eq("code", code);
+  try {
+    const { data: updatedInvite, error: inviteError } = await supabase
+      .from("invites")
+      .update({
+        answered: true,
+        attending_guests: attendingGuests,
+      })
+      .eq("code", normalizedCode)
+      .select("code")
+      .maybeSingle();
 
-  if (inviteError) {
-    console.error(inviteError);
-    throw new Error("Uitnodiging kon niet bijgewerkt worden.");
+    if (inviteError || !updatedInvite) {
+      console.error("Public RSVP update failed", inviteError);
+      return { error: "Jullie antwoord kon niet worden opgeslagen. Probeer het opnieuw." };
+    }
+  } catch (error) {
+    console.error("Public RSVP update failed", error);
+    return { error: "Jullie antwoord kon niet worden opgeslagen. Probeer het opnieuw." };
   }
 
-  revalidatePath(`/i/${code}`);
-  revalidatePath(`/i/${code}/rsvp`);
-  redirect(`/i/${code}`);
+  revalidatePath(`/i/${normalizedCode}`);
+  revalidatePath(`/i/${normalizedCode}/rsvp`);
+  redirect(`/i/${normalizedCode}`);
 }

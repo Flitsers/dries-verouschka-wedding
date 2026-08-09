@@ -31,6 +31,9 @@ export async function createInvite(
     return { error: "Kies een geldig type uitnodiging." };
   }
 
+  const includesStadhuis =
+    invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
+
   const code = randomUUID().replace(/-/g, "").substring(0, 8).toUpperCase();
   const { error: inviteError } = await supabase
     .from("invites")
@@ -40,6 +43,7 @@ export async function createInvite(
       allowed_guests: allowedGuests,
       email,
       invitation_type: invitationType,
+      includes_stadhuis: includesStadhuis,
       answered: false,
       attending_guests: null,
     });

@@ -6,7 +6,15 @@ import { wedding } from "@/lib/wedding";
 
 const mapsUrl = "https://maps.app.goo.gl/JL6naH5Aq5r98jfZ6";
 
-export default function WeddingLocation() {
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+export default function WeddingLocation({
+  title = "Waar we elkaar het jawoord geven",
+  description = "De ceremonie, receptie en viering vinden samen plaats op deze warme, sfeervolle locatie.",
+}: Props) {
   return (
     <section id="locatie" className="relative isolate overflow-hidden bg-[#10261d] py-28 text-white md:py-36">
       <div className="pointer-events-none absolute -left-40 top-1/3 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
@@ -14,7 +22,7 @@ export default function WeddingLocation() {
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <Reveal>
           <div className="mx-auto max-w-4xl">
-            <SectionTitle eyebrow="Locatie" title="Waar we elkaar het jawoord geven" />
+            <SectionTitle eyebrow="Locatie" title={title} />
           </div>
         </Reveal>
 
@@ -55,10 +63,7 @@ export default function WeddingLocation() {
                 </address>
               </div>
 
-              <p className="mt-8 text-lg leading-relaxed text-gray-300">
-                De ceremonie, receptie en viering vinden samen plaats op deze warme,
-                sfeervolle locatie.
-              </p>
+              <p className="mt-8 text-lg leading-relaxed text-gray-300">{description}</p>
 
               <a
                 href={mapsUrl}

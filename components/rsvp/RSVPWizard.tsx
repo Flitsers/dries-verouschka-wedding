@@ -1,9 +1,9 @@
 "use client";
 
 import { Check, ChevronLeft, ChevronRight, Send, Users } from "lucide-react";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { submitRSVP } from "@/app/actions/rsvp";
+import { submitRSVP, type SubmitRsvpState } from "@/app/actions/rsvp";
 
 type Props = {
   code: string;
@@ -11,6 +11,8 @@ type Props = {
   allowedGuests: number;
   initialAttendingGuests: number | null;
 };
+
+const initialSubmitState: SubmitRsvpState = { error: null };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -31,6 +33,7 @@ export default function RSVPWizard({ code, familyName, allowedGuests, initialAtt
   const [step, setStep] = useState(1);
   const [attendingGuests, setAttendingGuests] = useState<number | null>(initialAttendingGuests);
   const [showAttendanceError, setShowAttendanceError] = useState(false);
+  const [submitState, formAction] = useActionState(submitRSVP, initialSubmitState);
   const attendanceOptions = allowedGuests === 1
     ? [
         { value: 1, title: "Ja, ik ben erbij", description: "Ik vier deze dag graag met jullie mee." },
@@ -57,8 +60,13 @@ export default function RSVPWizard({ code, familyName, allowedGuests, initialAtt
   };
 
   return (
-    <form action={submitRSVP} className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10">
+    <form action={formAction} className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10">
       <input type="hidden" name="code" value={code} />
+      <input
+        type="hidden"
+        name="attending_guests"
+        value={attendingGuests === null ? "" : String(attendingGuests)}
+      />
 
       <div className="mb-10" aria-label={`Stap ${step} van 2`}>
         <div className="flex items-center gap-2">
@@ -96,7 +104,7 @@ export default function RSVPWizard({ code, familyName, allowedGuests, initialAtt
               >
                 <input
                   type="radio"
-                  name="attending_guests"
+                  name="attendance_option"
                   value={option.value}
                   checked={attendingGuests === option.value}
                   onChange={() => selectAttendance(option.value)}
@@ -131,6 +139,12 @@ export default function RSVPWizard({ code, familyName, allowedGuests, initialAtt
             <div className="flex items-start justify-between gap-6 py-4"><dt className="text-white/55">Aanwezig</dt><dd className="text-right text-white">{attendingGuests === 0 ? "Niet aanwezig" : `${attendingGuests} ${attendingGuests === 1 ? "persoon" : "personen"} aanwezig`}</dd></div>
           </dl>
         </section>
+      )}
+
+      {submitState.error && (
+        <p role="alert" className="mt-8 rounded-xl border border-rose-200/20 bg-rose-200/10 px-4 py-3 text-sm text-rose-100">
+          {submitState.error}
+        </p>
       )}
 
       <div className="mt-10 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">

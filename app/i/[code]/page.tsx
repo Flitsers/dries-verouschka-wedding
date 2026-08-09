@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import PersonalizedInvitation from "@/app/i/[code]/PersonalizedInvitation";
+import { isInvitationType } from "@/app/i/[code]/invitation-types";
 
 type Props = {
   params: Promise<{
@@ -21,16 +22,19 @@ export default async function InvitePage({ params }: Props) {
     notFound();
   }
 
-  const invitationType = data.invitation_type === "reception_plus" || data.invitation_type === "evening_only"
-    ? data.invitation_type
-    : "full_day";
+  if (!isInvitationType(data.invitation_type)) {
+    notFound();
+  }
 
   return (
     <PersonalizedInvitation
       code={data.code}
       familyName={data.family_name}
       allowedGuests={data.allowed_guests}
-      invitationType={invitationType}
+      invitationType={data.invitation_type}
+      includesStadhuis={
+        data.invitation_type === "full_day" && data.includes_stadhuis === true
+      }
       answered={data.answered}
       attendingGuests={typeof data.attending_guests === "number" ? data.attending_guests : null}
     />

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RSVPWizard from "@/components/rsvp/RSVPWizard";
+import { isInvitationType } from "@/app/i/[code]/invitation-types";
 
 type Props = {
   params: Promise<{
@@ -18,6 +19,10 @@ export default async function RSVPPage({ params }: Props) {
     .single();
 
   if (error || !data) {
+    notFound();
+  }
+
+  if (!isInvitationType(data.invitation_type)) {
     notFound();
   }
 

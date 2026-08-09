@@ -11,6 +11,16 @@ export default function NewInviteForm() {
   const [familyName, setFamilyName] = useState("");
   const [email, setEmail] = useState("");
   const [invitationType, setInvitationType] = useState("full_day");
+  const [includesStadhuis, setIncludesStadhuis] = useState(false);
+
+  function handleInvitationTypeChange(value: string) {
+    setInvitationType(value);
+
+    if (value !== "full_day") {
+      setIncludesStadhuis(false);
+    }
+  }
+
   return (
     <form action={formAction} className="mt-10 space-y-6" noValidate>
       <div>
@@ -29,12 +39,27 @@ export default function NewInviteForm() {
 
       <div>
         <label htmlFor="invitation_type">Type uitnodiging</label>
-        <select id="invitation_type" name="invitation_type" value={invitationType} onChange={(event) => setInvitationType(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4 text-white">
+        <select id="invitation_type" name="invitation_type" value={invitationType} onChange={(event) => handleInvitationTypeChange(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4 text-white">
           <option value="full_day">Volledige dag</option>
           <option value="reception_plus">Vanaf receptie</option>
           <option value="evening_only">Enkel avondfeest</option>
         </select>
       </div>
+
+      <label className={`flex items-start gap-3 rounded-2xl border px-5 py-4 transition ${invitationType === "full_day" ? "border-white/10 bg-white/[0.04]" : "border-white/[0.06] bg-black/10 text-white/40"}`}>
+        <input
+          type="checkbox"
+          name="includes_stadhuis"
+          checked={includesStadhuis}
+          disabled={invitationType !== "full_day"}
+          onChange={(event) => setIncludesStadhuis(event.target.checked)}
+          className="mt-1 h-4 w-4 accent-[#d4b06a]"
+        />
+        <span>
+          <span className="block font-medium">Uitgenodigd voor het Stadhuis</span>
+          <span className="mt-1 block text-sm text-white/50">Alleen beschikbaar voor uitnodigingen voor de volledige dag.</span>
+        </span>
+      </label>
 
       <div>
         <label htmlFor="email">Email</label>

@@ -15,6 +15,7 @@ type Invite = {
   attending_guests: number | null;
   answered: boolean;
   invitation_type: string | null;
+  includes_stadhuis: boolean;
 };
 
 type Props = {
@@ -35,6 +36,10 @@ function getInvitationType(invite: Invite): InvitationType {
   return typeof invite.invitation_type === "string" && invite.invitation_type in invitationTypes
     ? invite.invitation_type as InvitationType
     : "full_day";
+}
+
+function includesStadhuis(invite: Invite) {
+  return getInvitationType(invite) === "full_day" && invite.includes_stadhuis === true;
 }
 
 function getAttendingGuests(invite: Invite) {
@@ -131,8 +136,20 @@ export default function InviteDashboard({ invites }: Props) {
   const fullDay = statsForType("full_day");
   const receptionPlus = statsForType("reception_plus");
   const eveningOnly = statsForType("evening_only");
+  const stadhuisInvites = invites.filter(includesStadhuis);
+  const stadhuisAttending = stadhuisInvites.reduce(
+    (total, invite) => {
+      const attending = invite.attending_guests;
+      return total + (typeof attending === "number" && Number.isInteger(attending) ? attending : 0);
+    },
+    0,
+  );
+  const stadhuisPending = stadhuisInvites.reduce(
+    (total, invite) => total + getPendingGuestCount(invite),
+    0,
+  );
   const eventAttendance = [
-    { event: "Stadhuis", attending: fullDay.attending, pending: fullDay.pending },
+    { event: "Stadhuis", attending: stadhuisAttending, pending: stadhuisPending },
     { event: "Ceremonie", attending: fullDay.attending, pending: fullDay.pending },
     { event: "Dagsreceptie", attending: fullDay.attending + receptionPlus.attending, pending: fullDay.pending + receptionPlus.pending },
     { event: "Diner", attending: fullDay.attending + receptionPlus.attending, pending: fullDay.pending + receptionPlus.pending },
@@ -322,7 +339,16 @@ export default function InviteDashboard({ invites }: Props) {
                         <p className="font-medium text-white">{invite.family_name}</p>
                         <p className="mt-1 font-mono text-xs tracking-[0.1em] text-[#d4b06a]/75">{invite.code}</p>
                       </td>
-                      <td className="px-6 py-5"><InvitationTypeBadge type={invitationType} /></td>
+                      <td className="px-6 py-5">
+                        <div className="flex flex-wrap gap-2">
+                          <InvitationTypeBadge type={invitationType} />
+                          {includesStadhuis(invite) && (
+                            <span className="inline-flex rounded-full border border-[#d4b06a]/25 bg-[#d4b06a]/10 px-3 py-1.5 text-xs font-medium text-[#f5d998]">
+                              Stadhuis
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-5 text-sm text-white/75">{invite.allowed_guests} {invite.allowed_guests === 1 ? "persoon" : "personen"}</td>
                       <td className="px-6 py-5"><StatusBadge invite={invite} /></td>
                       <td className="max-w-52 truncate px-6 py-5 text-sm text-white/60" title={invite.email ?? undefined}>{invite.email || "—"}</td>
@@ -350,6 +376,11 @@ export default function InviteDashboard({ invites }: Props) {
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <InvitationTypeBadge type={invitationType} />
+                    {includesStadhuis(invite) && (
+                      <span className="inline-flex rounded-full border border-[#d4b06a]/25 bg-[#d4b06a]/10 px-3 py-1.5 text-xs font-medium text-[#f5d998]">
+                        Stadhuis
+                      </span>
+                    )}
                     <span className="text-sm text-white/65">{invite.allowed_guests} {invite.allowed_guests === 1 ? "persoon uitgenodigd" : "personen uitgenodigd"}</span>
                   </div>
                   {invite.email && <p className="mt-3 break-all text-sm text-white/55">{invite.email}</p>}

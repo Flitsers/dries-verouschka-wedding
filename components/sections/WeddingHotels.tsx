@@ -7,20 +7,7 @@ const accommodationOptions = [
     name: wedding.hotels[0].name,
     description: "Een comfortabele verblijfplaats vlak bij onze feestlocatie.",
     distance: `${wedding.hotels[0].distance} van ${wedding.venue.name}`,
-    price: "Placeholder — prijsindicatie volgt.",
     href: "https://www.google.com/maps/search/?api=1&query=Waerboom",
-  },
-  {
-    name: "Hotel optie 2",
-    description: "Placeholder — voeg hier later een korte, sfeervolle beschrijving van deze overnachtingsoptie toe.",
-    distance: "Placeholder — afstand of reistijd tot de locatie volgt.",
-    price: "Placeholder — prijsindicatie volgt.",
-  },
-  {
-    name: "Hotel optie 3",
-    description: "Placeholder — voeg hier later een korte, sfeervolle beschrijving van deze overnachtingsoptie toe.",
-    distance: "Placeholder — afstand of reistijd tot de locatie volgt.",
-    price: "Placeholder — prijsindicatie volgt.",
   },
 ];
 
@@ -39,7 +26,7 @@ export default function WeddingHotels() {
           </div>
         </Reveal>
 
-        <div className="mt-20 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mx-auto mt-20 max-w-xl">
           {accommodationOptions.map((hotel, index) => {
             const hasHotelLink = Boolean(hotel.href);
 
@@ -65,10 +52,6 @@ export default function WeddingHotels() {
                       <div className="flex items-start justify-between gap-6">
                         <dt className="text-white/45">Locatie</dt>
                         <dd className="text-right text-[#d4b06a]">{hotel.distance}</dd>
-                      </div>
-                      <div className="flex items-start justify-between gap-6">
-                        <dt className="text-white/45">Prijs</dt>
-                        <dd className="text-right text-white/70">{hotel.price}</dd>
                       </div>
                     </dl>
 

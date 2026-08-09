@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { wedding } from "@/lib/wedding";
 
-export default function Countdown() {
+type Props = {
+  targetDate: string;
+};
+
+export default function Countdown({ targetDate }: Props) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -15,7 +18,7 @@ export default function Countdown() {
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date().getTime();
-      const target = wedding.event.date.getTime();
+      const target = new Date(targetDate).getTime();
 
       const difference = target - now;
 
@@ -62,7 +65,7 @@ export default function Countdown() {
 
     return () => clearInterval(interval);
 
-  }, []);
+  }, [targetDate]);
 
 
 

@@ -1,17 +1,21 @@
 import { wedding } from "@/lib/wedding";
 
-const links = [
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+type Props = {
+  links?: readonly FooterLink[];
+};
+
+const publicLinks = [
+  { label: "Naar boven", href: "#top" },
   { label: "Ons verhaal", href: "#verhaal" },
-  { label: "Onze dag", href: "#planning" },
-  { label: "Locatie", href: "#locatie" },
-  { label: "Praktische info", href: "#praktisch" },
-  { label: "Hotels", href: "#hotels" },
-  { label: "Dresscode", href: "#dresscode" },
-  { label: "FAQ", href: "#faq" },
-  { label: "RSVP", href: "#rsvp" },
+  { label: "Persoonlijke uitnodiging", href: "#uitnodiging" },
 ];
 
-export default function Footer() {
+export default function Footer({ links = publicLinks }: Props) {
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#08120d] py-20 text-center text-white md:py-28">
       <div className="pointer-events-none absolute left-1/2 top-0 h-px w-1/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#d4b06a]/80 to-transparent" />

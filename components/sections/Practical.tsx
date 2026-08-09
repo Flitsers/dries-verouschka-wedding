@@ -1,6 +1,6 @@
 import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
-import { wedding } from "@/lib/wedding";
+import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
 
 export default function Practical() {
   const items = [
@@ -14,7 +14,7 @@ export default function Practical() {
     },
     {
       title: "Timing",
-      text: "De ceremonie start om 16:00. We vragen onze gasten tijdig aanwezig te zijn.",
+      text: `De ceremonie start om ${getWeddingScheduleTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
     },
     {
       title: "Cadeau",
