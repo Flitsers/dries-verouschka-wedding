@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+import { getCanonicalSiteOrigin } from "@/lib/site-url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,6 +15,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getCanonicalSiteOrigin()),
   title: "Dries & Verouschka | 19 december 2026",
   description:
     "Een winterse dag om nooit te vergeten. Ontdek alle informatie over de trouwdag van Dries & Verouschka op 19 december 2026.",
@@ -31,6 +33,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
+    url: "/",
     type: "website",
     locale: "nl_BE",
     siteName: "Dries & Verouschka",

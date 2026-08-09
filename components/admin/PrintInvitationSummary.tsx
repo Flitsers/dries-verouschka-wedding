@@ -68,7 +68,7 @@ export default function PrintInvitationSummary({
         </section>
 
         <div className="[&_h2]:text-[#17251f] [&_p]:text-[#17251f]/60">
-          <QRCodeCard code={code} />
+          <QRCodeCard invitationUrl={publicUrl} />
         </div>
       </div>
 

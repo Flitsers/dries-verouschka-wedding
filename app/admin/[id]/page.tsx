@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import CopyLinkButton from "@/components/admin/CopyLinkButton";
 import AdminRsvpForm from "@/components/admin/AdminRsvpForm";
@@ -8,6 +7,7 @@ import InvitationAccessForm from "@/components/admin/InvitationAccessForm";
 import PrintInvitationSummary, { PrintButton } from "@/components/admin/PrintInvitationSummary";
 import QRCodeCard from "@/components/admin/QRCodeCard";
 import { requireAdmin } from "@/lib/admin-auth";
+import { getCanonicalInvitationUrl } from "@/lib/site-url";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const invitationTypes = {
@@ -67,7 +67,6 @@ export default async function InviteDetails({ params }: Props) {
   await requireAdmin();
   const supabase = createSupabaseAdminClient();
   const { id } = await params;
-  const requestHeaders = await headers();
 
   const { data, error } = await supabase
     .from("invites")
@@ -99,11 +98,7 @@ export default async function InviteDetails({ params }: Props) {
         ? "border-rose-300/20 bg-rose-400/10 text-rose-100"
         : "border-emerald-300/20 bg-emerald-400/10 text-emerald-200";
   const publicInvitePath = `/i/${data.code}`;
-  const forwardedHost = requestHeaders.get("x-forwarded-host")?.split(",")[0]?.trim();
-  const host = forwardedHost || requestHeaders.get("host");
-  const forwardedProtocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const protocol = forwardedProtocol || (host?.startsWith("localhost") ? "http" : "https");
-  const publicInviteUrl = host ? `${protocol}://${host}${publicInvitePath}` : publicInvitePath;
+  const publicInviteUrl = getCanonicalInvitationUrl(String(data.code));
 
   return (
     <main className="min-h-screen bg-[#183328] px-5 py-10 text-white print:bg-white print:p-0 md:px-8 md:py-14">
@@ -180,11 +175,11 @@ export default async function InviteDetails({ params }: Props) {
               <p className="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black/20 px-4 py-3 font-mono text-sm text-[#d4b06a]">{publicInvitePath}</p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 <a href={publicInvitePath} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-full border border-[#d4b06a] px-5 py-3 text-sm text-[#d4b06a] transition hover:bg-[#d4b06a] hover:text-[#183328]">Open uitnodiging</a>
-                <CopyLinkButton code={data.code} />
+                <CopyLinkButton invitationUrl={publicInviteUrl} />
                 <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2"><PrintButton /></div>
               </div>
             </section>
-            <QRCodeCard code={data.code} />
+            <QRCodeCard invitationUrl={publicInviteUrl} />
           </aside>
         </div>
 

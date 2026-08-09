@@ -4,18 +4,16 @@ import { useEffect, useId, useState } from "react";
 import QRCode from "qrcode";
 
 type Props = {
-  code: string;
+  invitationUrl: string;
 };
 
-export default function QRCodeCard({ code }: Props) {
+export default function QRCodeCard({ invitationUrl }: Props) {
   const [qr, setQr] = useState("");
   const headingId = useId();
 
   useEffect(() => {
     async function generate() {
-      const url = `${window.location.origin}/i/${code}`;
-
-      const image = await QRCode.toDataURL(url, {
+      const image = await QRCode.toDataURL(invitationUrl, {
         width: 320,
         margin: 1,
       });
@@ -24,7 +22,7 @@ export default function QRCodeCard({ code }: Props) {
     }
 
     generate();
-  }, [code]);
+  }, [invitationUrl]);
 
   return (
     <section className="rounded-3xl border border-white/10 bg-white/[0.05] p-6 print:break-inside-avoid print:border-black/15 print:bg-white" aria-labelledby={headingId}>

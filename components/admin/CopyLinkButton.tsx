@@ -4,16 +4,14 @@ import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  code: string;
+  invitationUrl: string;
 };
 
-export default function CopyLinkButton({ code }: Props) {
+export default function CopyLinkButton({ invitationUrl }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
-    const url = `${window.location.origin}/i/${code}`;
-
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(invitationUrl);
 
     setCopied(true);
 
