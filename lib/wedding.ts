@@ -29,7 +29,8 @@ export const wedding = {
   venue: {
     name: "Kattebroek",
     city: "Dilbeek",
-    address: "Kattebroekstraat, Dilbeek",
+    address: "Elegemstraat 160",
+    postalCode: "1700",
   },
 
   schedule: [
@@ -71,15 +72,45 @@ export const wedding = {
     },
   ] satisfies WeddingScheduleEvent[],
 
-  dresscode: "Christmas Chique",
+  dresscode: "Christmas Chic",
 
   gift:
-    "Jullie aanwezigheid is het mooiste cadeau. Wie graag iets extra geeft, mag kiezen voor een financiële bijdrage aan onze huwelijksreis.",
+    "Jullie aanwezigheid is voor ons het mooiste cadeau. Wie ons daarnaast graag iets schenkt, kan vrijblijvend een bijdrage doen via BE92 0018 6704 8623.",
 
   hotels: [
     {
-      name: "Waerboom",
-      distance: "2 min",
+      name: "B&B Louis 1924",
+      address: "Lange Veldstraat 19",
+      postalCity: "1700 Dilbeek",
+      distance: "4 km",
+      website: "https://www.louis1924.be",
+    },
+    {
+      name: "Gosset Hotel",
+      address: "Alfons Gossetlaan 52",
+      postalCity: "1702 Groot-Bijgaarden",
+      distance: "5 km",
+      website: "https://www.gosset.be",
+    },
+    {
+      name: "Ibis Groot-Bijgaarden",
+      address: "E40 Richting Gent",
+      postalCity: "1702 Groot-Bijgaarden",
+      distance: "5 km",
+    },
+    {
+      name: "B&B Onsemhoeve",
+      address: "Honsemstraat 2",
+      postalCity: "1700 Sint-Martens-Bodegem",
+      distance: "6 km",
+      website: "https://www.onsemhoeve.be",
+    },
+    {
+      name: "Waer Waters",
+      address: "Rodenberg 21",
+      postalCity: "1702 Groot-Bijgaarden",
+      distance: "5 km",
+      website: "https://www.waerwaters.com",
     },
   ],
 };

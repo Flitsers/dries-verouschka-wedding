@@ -56,7 +56,7 @@ export default async function RSVPPage({ params }: Props) {
 
         <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/15 px-5 py-3 text-gray-300">
           <span className="font-serif text-2xl text-[#d4b06a]">{data.allowed_guests}</span>
-          <span>personen uitgenodigd</span>
+          <span>{data.allowed_guests === 1 ? "persoon uitgenodigd" : "personen uitgenodigd"}</span>
         </div>
 
         <RSVPWizard

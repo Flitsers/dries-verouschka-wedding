@@ -4,7 +4,6 @@ import PersonalizedHero from "@/components/invitation/PersonalizedHero";
 import Navbar, { type NavigationLink } from "@/components/layout/Navbar";
 import RSVPConfirmation from "@/components/rsvp/RSVPConfirmation";
 import Footer from "@/components/sections/Footer";
-import Story from "@/components/sections/Story";
 import WeddingDayTimeline, {
   type TimelineEvent,
 } from "@/components/sections/WeddingDayTimeline";
@@ -35,7 +34,6 @@ type Props = {
 };
 
 const navigationLinks: readonly NavigationLink[] = [
-  { name: "Ons verhaal", href: "#verhaal" },
   { name: "Onze dag", href: "#planning" },
   { name: "Locatie", href: "#locatie" },
   { name: "Praktisch", href: "#praktisch" },
@@ -114,7 +112,11 @@ function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
   return [
     {
       title: "Parking",
-      text: "Er is parking voorzien bij de locatie. Meer praktische informatie volgt binnenkort.",
+      text: "Er is ruime gratis parking voorzien aan de locatie.",
+    },
+    {
+      title: "Geen kinderen",
+      text: "Onze trouw is een feest voor volwassenen. We vragen daarom vriendelijk om geen kinderen mee te brengen.",
     },
     ...(invitationType === "full_day"
       ? [
@@ -130,7 +132,7 @@ function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
     },
     {
       title: "Overnachten",
-      text: `${wedding.hotels[0].name} ligt op ongeveer ${wedding.hotels[0].distance} van ${wedding.venue.name}.`,
+      text: "Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.",
     },
     {
       title: "Cadeau",
@@ -163,11 +165,12 @@ export default function PersonalizedInvitation({
 
       <main className="overflow-x-hidden bg-[#183328]">
         <PersonalizedHero
+          code={code}
           familyName={familyName}
           allowedGuests={allowedGuests}
           countdownTarget={getCountdownTarget(invitationType)}
+          answered={answered}
         />
-        <Story />
         <WeddingDayTimeline schedule={visibleEvents} />
         <WeddingLocation
           title="Waar we samen vieren"
@@ -183,7 +186,10 @@ export default function PersonalizedInvitation({
           <div className="relative mx-auto max-w-3xl">
             {answered ? (
               <Reveal>
-                <RSVPConfirmation attendingGuests={attendingGuests} />
+                <RSVPConfirmation
+                  allowedGuests={allowedGuests}
+                  attendingGuests={attendingGuests}
+                />
               </Reveal>
             ) : (
               <Reveal>

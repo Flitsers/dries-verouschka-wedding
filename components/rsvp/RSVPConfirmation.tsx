@@ -1,12 +1,14 @@
 type Props = {
+  allowedGuests: number;
   attendingGuests: number | null;
 };
 
-export default function RSVPConfirmation({ attendingGuests }: Props) {
+export default function RSVPConfirmation({ allowedGuests, attendingGuests }: Props) {
+  const possessivePronoun = allowedGuests === 1 ? "je" : "jullie";
   const message = attendingGuests === null
-    ? "We hebben jullie antwoord ontvangen."
+    ? `We hebben ${possessivePronoun} antwoord ontvangen.`
     : attendingGuests > 0
-      ? "Bedankt voor jullie antwoord. We kijken ernaar uit om samen te vieren."
+      ? `Bedankt voor ${possessivePronoun} antwoord. We kijken ernaar uit om samen te vieren.`
       : "Bedankt om ons iets te laten weten.";
 
   return (

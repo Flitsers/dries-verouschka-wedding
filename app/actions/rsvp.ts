@@ -21,7 +21,7 @@ export async function submitRSVP(
     typeof attendingGuestsValue !== "string" ||
     !["0", "1", "2"].includes(attendingGuestsValue)
   ) {
-    return { error: "De RSVP-gegevens zijn ongeldig. Controleer jullie antwoord en probeer opnieuw." };
+    return { error: "De RSVP-gegevens zijn ongeldig. Controleer het antwoord en probeer opnieuw." };
   }
 
   const normalizedCode = code.trim();

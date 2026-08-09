@@ -15,7 +15,11 @@ const ceremonyFaq: FaqItem = {
 const generalFaqItems: FaqItem[] = [
   {
     question: "Waar kunnen we parkeren?",
-    answer: "Er is parking voorzien bij de locatie. Meer praktische informatie volgt binnenkort.",
+    answer: "Er is ruime gratis parking voorzien aan de locatie.",
+  },
+  {
+    question: "Mogen kinderen meekomen?",
+    answer: "Onze trouw is een feest voor volwassenen. We vragen daarom vriendelijk om geen kinderen mee te brengen.",
   },
   {
     question: "Is er een dresscode?",
@@ -23,7 +27,7 @@ const generalFaqItems: FaqItem[] = [
   },
   {
     question: "Kunnen we blijven overnachten?",
-    answer: `${wedding.hotels[0].name} ligt op ongeveer ${wedding.hotels[0].distance} van ${wedding.venue.name}.`,
+    answer: "Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.",
   },
   {
     question: "Wat kunnen we cadeau doen?",

@@ -59,7 +59,7 @@ export default function WeddingLocation({
                 <address className="not-italic leading-relaxed">
                   {wedding.venue.address}
                   <br />
-                  {wedding.venue.city}
+                  {wedding.venue.postalCode} {wedding.venue.city}
                 </address>
               </div>
 

@@ -94,8 +94,6 @@ export default function Hero() {
               </div>
 
               <div className="mt-8 flex w-full max-w-sm flex-col items-stretch justify-center gap-3 sm:mt-11 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4 [&>a]:inline-flex [&>a]:justify-center [&>a]:shadow-[0_14px_35px_rgba(0,0,0,0.25)] sm:[&>a]:min-w-52">
-                <Button href="#verhaal">Ons verhaal</Button>
-
                 <Button href="#uitnodiging" variant="secondary">
                   Persoonlijke uitnodiging
                 </Button>

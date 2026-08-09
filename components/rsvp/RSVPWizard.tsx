@@ -131,7 +131,7 @@ export default function RSVPWizard({ code, familyName, allowedGuests, initialAtt
         <section aria-labelledby="confirm-title">
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#d4b06a]">Controle</p>
           <h2 id="confirm-title" className="mt-3 text-4xl leading-none sm:text-5xl" style={{ fontFamily: "var(--font-cormorant)" }}>
-            Controleer jullie antwoord
+            {allowedGuests === 1 ? "Controleer je antwoord" : "Controleer jullie antwoord"}
           </h2>
           <dl className="mt-8 divide-y divide-white/10 border-y border-white/10">
             <div className="flex items-start justify-between gap-6 py-4"><dt className="text-white/55">Uitnodiging</dt><dd className="text-right text-white">{familyName}</dd></div>

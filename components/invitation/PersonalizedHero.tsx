@@ -1,11 +1,14 @@
+import Link from "next/link";
 import Countdown from "@/components/sections/Countdown";
 import Reveal from "@/components/ui/Reveal";
 import { wedding } from "@/lib/wedding";
 
 type Props = {
+  code: string;
   familyName: string;
   allowedGuests: number;
   countdownTarget: string;
+  answered: boolean;
 };
 
 const snowflakes = Array.from({ length: 45 }, (_, index) => ({
@@ -18,9 +21,11 @@ const snowflakes = Array.from({ length: 45 }, (_, index) => ({
 }));
 
 export default function PersonalizedHero({
+  code,
   familyName,
   allowedGuests,
   countdownTarget,
+  answered,
 }: Props) {
   const plural = allowedGuests === 2;
 
@@ -96,12 +101,20 @@ export default function PersonalizedHero({
         </div>
 
         <Reveal>
-          <a
-            href="#planning"
-            className="mt-9 inline-flex rounded-full border border-[#d4b06a] px-7 py-3.5 text-sm font-medium text-[#d4b06a] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d4b06a] hover:text-[#183328]"
-          >
-            {plural ? "Ontdek jullie uitnodiging" : "Ontdek je uitnodiging"}
-          </a>
+          <div className="mx-auto mt-9 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+            <Link
+              href={`/i/${code}/rsvp`}
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d4b06a] px-7 py-3.5 text-sm font-semibold text-[#183328] shadow-[0_14px_35px_rgba(0,0,0,0.25)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
+            >
+              {answered ? "Antwoord bekijken of wijzigen" : "Bevestig aanwezigheid"}
+            </Link>
+            <a
+              href="#planning"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#d4b06a] px-7 py-3.5 text-sm font-medium text-[#d4b06a] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d4b06a] hover:text-[#183328] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
+            >
+              {plural ? "Ontdek jullie uitnodiging" : "Ontdek je uitnodiging"}
+            </a>
+          </div>
         </Reveal>
       </div>
     </section>

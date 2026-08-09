@@ -11,7 +11,6 @@ type Props = {
 
 const publicLinks = [
   { label: "Naar boven", href: "#top" },
-  { label: "Ons verhaal", href: "#verhaal" },
   { label: "Persoonlijke uitnodiging", href: "#uitnodiging" },
 ];
 
