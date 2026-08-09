@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import PersonalizedInvitation from "@/app/i/[code]/PersonalizedInvitation";
 import { isInvitationType } from "@/app/i/[code]/invitation-types";
+import { getPublicInvitationByCode } from "@/lib/invitations/server";
 
 type Props = {
   params: Promise<{
@@ -11,32 +11,28 @@ type Props = {
 
 export default async function InvitePage({ params }: Props) {
   const { code } = await params;
+  const invitation = await getPublicInvitationByCode(code);
 
-  const { data, error } = await supabase
-    .from("invites")
-    .select("*")
-    .eq("code", code)
-    .single();
-
-  if (error || !data) {
+  if (!invitation) {
     notFound();
   }
 
-  if (!isInvitationType(data.invitation_type)) {
+  if (!isInvitationType(invitation.invitation_type)) {
     notFound();
   }
 
   return (
     <PersonalizedInvitation
-      code={data.code}
-      familyName={data.family_name}
-      allowedGuests={data.allowed_guests}
-      invitationType={data.invitation_type}
+      code={invitation.code}
+      familyName={invitation.family_name}
+      allowedGuests={invitation.allowed_guests}
+      invitationType={invitation.invitation_type}
       includesStadhuis={
-        data.invitation_type === "full_day" && data.includes_stadhuis === true
+        invitation.invitation_type === "full_day" &&
+        invitation.includes_stadhuis === true
       }
-      answered={data.answered}
-      attendingGuests={typeof data.attending_guests === "number" ? data.attending_guests : null}
+      answered={invitation.answered}
+      attendingGuests={invitation.attending_guests}
     />
   );
 }

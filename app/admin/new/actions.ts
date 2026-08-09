@@ -1,6 +1,6 @@
 "use server";
 
-import { randomUUID } from "crypto";
+import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -34,24 +34,34 @@ export async function createInvite(
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
 
-  const code = randomUUID().replace(/-/g, "").substring(0, 8).toUpperCase();
-  const { error: inviteError } = await supabase
-    .from("invites")
-    .insert({
-      code,
-      family_name: familyName,
-      allowed_guests: allowedGuests,
-      email,
-      invitation_type: invitationType,
-      includes_stadhuis: includesStadhuis,
-      answered: false,
-      attending_guests: null,
-    });
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const code = randomBytes(16).toString("base64url");
+    const { error: inviteError } = await supabase
+      .from("invites")
+      .insert({
+        code,
+        family_name: familyName,
+        allowed_guests: allowedGuests,
+        email,
+        invitation_type: invitationType,
+        includes_stadhuis: includesStadhuis,
+        answered: false,
+        attending_guests: null,
+      });
 
-  if (inviteError) {
-    console.error("Invite creation failed", inviteError);
-    return { error: "De uitnodiging kon niet worden aangemaakt. Probeer opnieuw." };
+    if (!inviteError) {
+      redirect("/admin");
+    }
+
+    if (inviteError.code !== "23505") {
+      console.error("Invite creation failed", {
+        errorCode: inviteError.code,
+        message: inviteError.message,
+      });
+      return { error: "De uitnodiging kon niet worden aangemaakt. Probeer opnieuw." };
+    }
   }
 
-  redirect("/admin");
+  console.error("Invite creation failed after repeated unique-code collisions");
+  return { error: "De uitnodiging kon niet worden aangemaakt. Probeer opnieuw." };
 }
