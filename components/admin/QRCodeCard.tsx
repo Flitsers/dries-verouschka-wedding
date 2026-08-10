@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useState } from "react";
 import QRCode from "qrcode";
 
@@ -30,9 +31,12 @@ export default function QRCodeCard({ invitationUrl }: Props) {
       <p className="mt-2 text-sm text-white/50 print:text-black/60">Deze code opent dezelfde persoonlijke uitnodigingslink.</p>
       <div className="mt-5 flex min-h-56 items-center justify-center rounded-2xl bg-white/[0.04] p-4 print:min-h-0 print:bg-white print:p-0">
         {qr && (
-          <img
+          <Image
             src={qr}
             alt="QR-code voor de persoonlijke uitnodiging"
+            width={320}
+            height={320}
+            unoptimized
             className="h-auto w-full max-w-64 rounded-xl bg-white p-3"
           />
         )}

@@ -4,10 +4,9 @@ import {
   isInvitationType,
   type InvitationType,
 } from "@/app/i/[code]/invitation-types";
+import { normalizeInvitationCode } from "@/lib/invitations/code";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-const legacyInvitationCodePattern = /^[0-9A-Fa-f]{8}$/;
-const secureInvitationCodePattern = /^[A-Za-z0-9_-]{22}$/;
 const publicInvitationFields = [
   "code",
   "family_name",
@@ -35,20 +34,6 @@ export type PublicRsvpResult =
   | { status: "invitation_not_found" }
   | { status: "over_capacity" }
   | { status: "database_error" };
-
-function normalizeInvitationCode(code: string) {
-  const normalizedCode = code.trim();
-
-  if (
-    normalizedCode.length > 64 ||
-    (!legacyInvitationCodePattern.test(normalizedCode) &&
-      !secureInvitationCodePattern.test(normalizedCode))
-  ) {
-    return null;
-  }
-
-  return normalizedCode;
-}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

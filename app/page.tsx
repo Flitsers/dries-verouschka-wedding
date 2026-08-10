@@ -10,14 +10,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+type Props = {
+  searchParams: Promise<{
+    invitation?: string | string[];
+  }>;
+};
+
+export default async function Home({ searchParams }: Props) {
+  const { invitation } = await searchParams;
+  const invitationError =
+    invitation === "invalid" || invitation === "not-found"
+      ? invitation
+      : undefined;
+
   return (
     <>
       <Navbar />
 
       <main className="bg-[#183328]">
         <Hero />
-        <InvitationAccess />
+        <InvitationAccess error={invitationError} />
       </main>
 
       <Footer />

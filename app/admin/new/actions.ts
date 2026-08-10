@@ -1,13 +1,15 @@
 "use server";
 
-import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
+import { generateInvitationCode } from "@/lib/invitations/generator";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type CreateInviteState = {
   error: string | null;
 };
+
+const MAX_CODE_INSERT_ATTEMPTS = 5;
 
 export async function createInvite(
   _previousState: CreateInviteState,
@@ -34,8 +36,8 @@ export async function createInvite(
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
 
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const code = randomBytes(16).toString("base64url");
+  for (let attempt = 0; attempt < MAX_CODE_INSERT_ATTEMPTS; attempt += 1) {
+    const code = generateInvitationCode();
     const { error: inviteError } = await supabase
       .from("invites")
       .insert({

@@ -94,6 +94,12 @@ export default function BulkInvitationPrint({ invitations }: Props) {
                   <Image src={invite.qrSource} alt={`QR-code voor de uitnodiging van ${invite.familyName}`} width={720} height={720} unoptimized className="h-auto w-[68mm] max-w-full" />
                 </div>
 
+                <p className="mt-[5mm] text-[10px] uppercase tracking-[0.2em] text-[#183328]/50">
+                  Uitnodigingscode
+                </p>
+                <p className="mt-[1.5mm] font-mono text-[18px] font-semibold tracking-[0.24em] text-[#183328]">
+                  {invite.code}
+                </p>
                 <p className="mt-[7mm] max-w-[98mm] text-[13px] leading-relaxed text-[#183328]/70">Scan om jullie persoonlijke uitnodiging te bekijken en te RSVP&apos;en.</p>
                 <p className="mt-[4mm] border-t border-[#b99755]/30 px-[6mm] pt-[4mm] text-[12px] font-medium text-[#183328]">
                   Deze uitnodiging is geldig voor {invite.allowedGuests} {invite.allowedGuests === 1 ? "persoon" : "personen"}.

@@ -4,6 +4,12 @@ import { ArrowRight, CircleAlert, Ticket } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Reveal from "@/components/ui/Reveal";
+import {
+  formatInvitationCodeInput,
+  INVITATION_CODE_ALPHABET,
+  INVITATION_CODE_LENGTH,
+  normalizeInvitationCode,
+} from "@/lib/invitations/code";
 
 export default function RSVP() {
   const router = useRouter();
@@ -13,10 +19,10 @@ export default function RSVP() {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedCode = code.trim().toUpperCase();
+    const normalizedCode = normalizeInvitationCode(code);
 
     if (!normalizedCode) {
-      setError("Vul de code uit jullie uitnodiging in.");
+      setError("Vul een geldige uitnodigingscode van 7 tekens in.");
       return;
     }
 
@@ -75,16 +81,24 @@ export default function RSVP() {
               <input
                 id="invite-code"
                 value={code}
-                onChange={(event) => setCode(event.target.value)}
+                onChange={(event) =>
+                  setCode(formatInvitationCodeInput(event.target.value))
+                }
                 onFocus={() => setError("")}
+                maxLength={INVITATION_CODE_LENGTH}
+                pattern={`[${INVITATION_CODE_ALPHABET}]{${INVITATION_CODE_LENGTH}}`}
+                inputMode="text"
+                enterKeyHint="go"
                 autoCapitalize="characters"
                 autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? "invite-code-hint invite-code-error" : "invite-code-hint"}
                 className={`min-w-0 flex-1 rounded-xl border bg-black/20 px-5 py-4 font-mono uppercase tracking-[0.2em] text-white outline-none transition placeholder:normal-case placeholder:tracking-normal focus:border-[#d4b06a] focus:ring-2 focus:ring-[#d4b06a]/20 ${
                   error ? "border-[#e2c17f]" : "border-white/10"
                 }`}
-                placeholder="BV. A1B2C3D4"
+                placeholder="K7M4QXP"
               />
               <button
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#d4b06a] px-6 py-4 font-semibold text-[#183328] shadow-[0_12px_28px_rgba(212,176,106,0.16)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f] hover:shadow-[0_16px_34px_rgba(212,176,106,0.25)] sm:w-auto"
