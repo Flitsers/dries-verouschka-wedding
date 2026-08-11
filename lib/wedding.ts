@@ -57,7 +57,7 @@ export const wedding = {
       title: "Avondreceptie",
     },
     {
-      time: "22:00–23:00",
+      time: "22:00",
       title: "Avondfeest",
       description: "De dansvloer gaat open!",
     },

@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const lanDevelopmentHost = "192.168.0.235";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -17,6 +18,11 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  ...(isDevelopment
+    ? {
+        allowedDevOrigins: [lanDevelopmentHost],
+      }
+    : {}),
   async headers() {
     return [
       {

@@ -1,15 +1,34 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useSyncExternalStore } from "react";
 import { login } from "@/app/admin/login/actions";
 
-const initialState = { error: null as string | null };
+type Props = {
+  initialError?: string | null;
+};
 
-export default function LoginForm() {
-  const [state, formAction, pending] = useActionState(login, initialState);
+const subscribeToHydration = () => () => undefined;
+
+export default function LoginForm({ initialError = null }: Props) {
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
+  const [state, formAction, pending] = useActionState(login, {
+    error: initialError,
+  });
+  const useDevelopmentFallback =
+    process.env.NODE_ENV === "development" && !hydrated;
 
   return (
-    <form action={formAction} className="mt-8 space-y-5">
+    <form
+      action={
+        useDevelopmentFallback ? "/admin/login/submit" : formAction
+      }
+      method={useDevelopmentFallback ? "post" : undefined}
+      className="mt-8 space-y-5"
+    >
       <div>
         <label htmlFor="email" className="text-sm text-white/70">E-mailadres</label>
         <input id="email" name="email" type="email" autoComplete="email" required className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4 outline-none focus:border-[#d4b06a]" />

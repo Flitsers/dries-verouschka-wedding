@@ -21,6 +21,44 @@ body {
   overflow-x: hidden;
 }
 
+body:has(.mobile-navigation-panel:popover-open) {
+  overflow: hidden;
+}
+
+.mobile-navigation-panel {
+  opacity: 0;
+  overscroll-behavior: contain;
+  transform: translateX(100%);
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease,
+    overlay 350ms allow-discrete,
+    display 350ms allow-discrete;
+}
+
+.mobile-navigation-panel:popover-open {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mobile-navigation-panel::backdrop {
+  background: rgba(3, 10, 7, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+@starting-style {
+  .mobile-navigation-panel:popover-open {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navigation-panel {
+    transition: none;
+  }
+}
+
 /* Selection */
 
 ::selection {

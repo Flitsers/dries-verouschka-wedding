@@ -1,4 +1,3 @@
-import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
 
@@ -48,19 +47,16 @@ export default function WeddingPractical({ items = defaultPracticalItems }: Prop
       <div className="pointer-events-none absolute -left-48 bottom-0 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <Reveal>
-          <div className="mx-auto max-w-3xl">
-            <SectionTitle eyebrow="Praktische info" title="Goed om te weten" />
-            <p className="mx-auto mt-7 max-w-xl text-center text-lg leading-relaxed text-white/65">
-              Alles wat jullie nodig hebben om zorgeloos mee te vieren.
-            </p>
-          </div>
-        </Reveal>
+        <div className="mx-auto max-w-3xl">
+          <SectionTitle eyebrow="Praktische info" title="Goed om te weten" />
+          <p className="mx-auto mt-7 max-w-xl text-center text-lg leading-relaxed text-white/65">
+            Alles wat jullie nodig hebben om zorgeloos mee te vieren.
+          </p>
+        </div>
 
         <div className="mt-20 grid gap-x-12 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item, index) => (
-            <Reveal key={item.title}>
-              <article className="group border-t border-white/10 py-8 md:py-10">
+            <article key={item.title} className="group border-t border-white/10 py-8 md:py-10">
                 <div className="flex items-baseline justify-between gap-4">
                   <h3 className="text-3xl leading-none md:text-4xl" style={{ fontFamily: "var(--font-cormorant)" }}>
                     {item.title}
@@ -73,8 +69,7 @@ export default function WeddingPractical({ items = defaultPracticalItems }: Prop
                   {item.text}
                 </p>
                 <span className="mt-6 block h-px w-10 bg-[#d4b06a]/30 transition-all duration-500 group-hover:w-16 group-hover:bg-[#d4b06a]" />
-              </article>
-            </Reveal>
+            </article>
           ))}
         </div>
       </div>

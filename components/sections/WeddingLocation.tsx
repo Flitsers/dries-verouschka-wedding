@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { ArrowUpRight, MapPin } from "lucide-react";
-import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { wedding } from "@/lib/wedding";
 
@@ -20,15 +19,12 @@ export default function WeddingLocation({
       <div className="pointer-events-none absolute -left-40 top-1/3 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <Reveal>
-          <div className="mx-auto max-w-4xl">
-            <SectionTitle eyebrow="Locatie" title={title} />
-          </div>
-        </Reveal>
+        <div className="mx-auto max-w-4xl">
+          <SectionTitle eyebrow="Locatie" title={title} />
+        </div>
 
         <div className="mt-16 grid items-stretch gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
-          <Reveal>
-            <figure className="group relative min-h-[420px] overflow-hidden rounded-[2rem] border border-[#d4b06a]/25 bg-[#0b1711] shadow-[0_24px_60px_rgba(0,0,0,0.3)] md:min-h-[580px]">
+          <figure className="group relative min-h-[420px] overflow-hidden rounded-[2rem] border border-[#d4b06a]/25 bg-[#0b1711] shadow-[0_24px_60px_rgba(0,0,0,0.3)] md:min-h-[580px]">
               <Image
                 src="/images/kattebroek.jpg"
                 alt={`${wedding.venue.name}, de trouwlocatie in ${wedding.venue.city}`}
@@ -43,11 +39,9 @@ export default function WeddingLocation({
                   {wedding.venue.name}
                 </p>
               </figcaption>
-            </figure>
-          </Reveal>
+          </figure>
 
-          <Reveal>
-            <article className="relative flex h-full flex-col justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.03] p-8 shadow-[0_20px_55px_rgba(0,0,0,0.16)] backdrop-blur-xl md:p-12">
+          <article className="relative flex h-full flex-col justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.03] p-8 shadow-[0_20px_55px_rgba(0,0,0,0.16)] backdrop-blur-xl md:p-12">
               <span className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#d4b06a]/75 to-transparent" />
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#d4b06a]">{wedding.venue.city}</p>
               <h3 className="mt-5 text-5xl leading-none md:text-6xl" style={{ fontFamily: "var(--font-cormorant)" }}>
@@ -73,8 +67,7 @@ export default function WeddingLocation({
               >
                 Open in Google Maps <ArrowUpRight size={17} />
               </a>
-            </article>
-          </Reveal>
+          </article>
         </div>
       </div>
     </section>

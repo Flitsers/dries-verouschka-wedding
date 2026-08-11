@@ -1,17 +1,30 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useSyncExternalStore } from "react";
 import { createInvite } from "@/app/admin/new/actions";
 
-const initialCreateInviteState = { error: null as string | null };
+type Props = {
+  initialError?: string | null;
+};
 
-export default function NewInviteForm() {
-  const [state, formAction, pending] = useActionState(createInvite, initialCreateInviteState);
+const subscribeToHydration = () => () => undefined;
+
+export default function NewInviteForm({ initialError = null }: Props) {
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
+  const [state, formAction, pending] = useActionState(createInvite, {
+    error: initialError,
+  });
   const [allowedGuests, setAllowedGuests] = useState("2");
   const [familyName, setFamilyName] = useState("");
   const [email, setEmail] = useState("");
   const [invitationType, setInvitationType] = useState("full_day");
   const [includesStadhuis, setIncludesStadhuis] = useState(false);
+  const useDevelopmentFallback =
+    process.env.NODE_ENV === "development" && !hydrated;
 
   function handleInvitationTypeChange(value: string) {
     setInvitationType(value);
@@ -22,7 +35,12 @@ export default function NewInviteForm() {
   }
 
   return (
-    <form action={formAction} className="mt-10 space-y-6" noValidate>
+    <form
+      action={useDevelopmentFallback ? "/admin/new/submit" : formAction}
+      method={useDevelopmentFallback ? "post" : undefined}
+      className="mt-10 space-y-6"
+      noValidate
+    >
       <div>
         <label htmlFor="family_name">Familie</label>
         <input id="family_name" name="family_name" required value={familyName} onChange={(event) => setFamilyName(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-5 py-4" />
@@ -68,7 +86,7 @@ export default function NewInviteForm() {
 
       {state.error && <p role="alert" className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">{state.error}</p>}
 
-      <button disabled={pending} className="w-full rounded-full border border-[#d4b06a] px-10 py-4 transition hover:bg-[#d4b06a] hover:text-[#183328] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
+      <button type="submit" disabled={pending} className="w-full rounded-full border border-[#d4b06a] px-10 py-4 transition hover:bg-[#d4b06a] hover:text-[#183328] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
         {pending ? "Uitnodiging maken..." : "Uitnodiging maken"}
       </button>
     </form>

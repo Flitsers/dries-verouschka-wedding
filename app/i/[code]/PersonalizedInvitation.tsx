@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { InvitationType } from "@/app/i/[code]/invitation-types";
 import PersonalizedHero from "@/components/invitation/PersonalizedHero";
 import Navbar, { type NavigationLink } from "@/components/layout/Navbar";
@@ -14,8 +13,11 @@ import WeddingLocation from "@/components/sections/WeddingLocation";
 import WeddingPractical, {
   type PracticalItem,
 } from "@/components/sections/WeddingPractical";
-import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
+import {
+  getInvitationCountdownTargetTimestamp,
+  getRequestTimestamp,
+} from "@/lib/invitations/countdown";
 import {
   getWeddingScheduleEvent,
   getWeddingScheduleTime,
@@ -41,6 +43,11 @@ const navigationLinks: readonly NavigationLink[] = [
   { name: "Dresscode", href: "#dresscode" },
   { name: "FAQ", href: "#faq" },
   { name: "RSVP", href: "#rsvp" },
+];
+
+const mobileNavigationLinks: readonly NavigationLink[] = [
+  { name: "Bovenaan", href: "#top" },
+  ...navigationLinks.filter((link) => link.href !== "#rsvp"),
 ];
 
 const footerLinks = [
@@ -98,16 +105,6 @@ const locationCopyByInvitationType: Record<InvitationType, string> = {
   evening_only: "Hier vieren we samen onze feestelijke avond.",
 };
 
-const countdownTimeByInvitationType: Record<InvitationType, string> = {
-  full_day: getWeddingScheduleTime("Ceremonie"),
-  reception_plus: getWeddingScheduleTime("Dagsreceptie"),
-  evening_only: getWeddingScheduleTime("Avondfeest").split("–")[0],
-};
-
-function getCountdownTarget(invitationType: InvitationType) {
-  return `${wedding.event.date}T${countdownTimeByInvitationType[invitationType]}:00`;
-}
-
 function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
   return [
     {
@@ -151,6 +148,7 @@ export default function PersonalizedInvitation({
   attendingGuests,
 }: Props) {
   const plural = allowedGuests === 2;
+  const countdownInitialTimestamp = getRequestTimestamp();
   const visibleEvents =
     invitationType === "full_day" && includesStadhuis
       ? [toTimelineEvent(cityHall), ...eventsByInvitationType.full_day]
@@ -160,6 +158,11 @@ export default function PersonalizedInvitation({
     <>
       <Navbar
         links={navigationLinks}
+        mobileLinks={mobileNavigationLinks}
+        mobilePrimaryLink={{
+          name: "Bevestig aanwezigheid",
+          href: `/i/${code}/rsvp`,
+        }}
         ariaLabel="Navigatie persoonlijke uitnodiging"
       />
 
@@ -168,7 +171,10 @@ export default function PersonalizedInvitation({
           code={code}
           familyName={familyName}
           allowedGuests={allowedGuests}
-          countdownTarget={getCountdownTarget(invitationType)}
+          countdownTargetTimestamp={getInvitationCountdownTargetTimestamp(
+            invitationType,
+          )}
+          countdownInitialTimestamp={countdownInitialTimestamp}
           answered={answered}
         />
         <WeddingDayTimeline schedule={visibleEvents} />
@@ -185,30 +191,26 @@ export default function PersonalizedInvitation({
           <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d4b06a]/5 blur-3xl" />
           <div className="relative mx-auto max-w-3xl">
             {answered ? (
-              <Reveal>
-                <RSVPConfirmation
-                  allowedGuests={allowedGuests}
-                  attendingGuests={attendingGuests}
-                />
-              </Reveal>
+              <RSVPConfirmation
+                allowedGuests={allowedGuests}
+                attendingGuests={attendingGuests}
+              />
             ) : (
-              <Reveal>
-                <div className="text-center">
-                  <SectionTitle
-                    eyebrow="Laat iets weten"
-                    title={plural ? "Zijn jullie erbij?" : "Ben je erbij?"}
-                  />
-                  <p className="mx-auto mt-7 max-w-lg text-lg leading-relaxed text-white/65">
-                    We ontvangen {plural ? "jullie" : "je"} antwoord graag via de persoonlijke RSVP.
-                  </p>
-                  <Link
-                    href={`/i/${code}/rsvp`}
-                    className="mt-10 inline-flex rounded-full bg-[#d4b06a] px-8 py-4 font-semibold text-[#183328] shadow-[0_14px_35px_rgba(0,0,0,0.2)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f]"
-                  >
-                    RSVP invullen
-                  </Link>
-                </div>
-              </Reveal>
+              <div className="text-center">
+                <SectionTitle
+                  eyebrow="Laat iets weten"
+                  title={plural ? "Zijn jullie erbij?" : "Ben je erbij?"}
+                />
+                <p className="mx-auto mt-7 max-w-lg text-lg leading-relaxed text-white/65">
+                  We ontvangen {plural ? "jullie" : "je"} antwoord graag via de persoonlijke RSVP.
+                </p>
+                <a
+                  href={`/i/${code}/rsvp`}
+                  className="mt-10 inline-flex rounded-full bg-[#d4b06a] px-8 py-4 font-semibold text-[#183328] shadow-[0_14px_35px_rgba(0,0,0,0.2)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f]"
+                >
+                  RSVP invullen
+                </a>
+              </div>
             )}
           </div>
         </section>

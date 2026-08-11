@@ -3,10 +3,26 @@ import LoginForm from "@/components/admin/LoginForm";
 import { isAllowedAdminEmail } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default async function AdminLoginPage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+const loginErrors = new Set([
+  "Vul je e-mailadres en wachtwoord in.",
+  "Ongeldige inloggegevens.",
+  "Dit account heeft geen beheerderstoegang.",
+]);
+
+export default async function AdminLoginPage({ searchParams }: Props) {
+  const { error } = await searchParams;
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (user && isAllowedAdminEmail(user.email)) redirect("/admin");
+
+  const initialError =
+    typeof error === "string" && loginErrors.has(error) ? error : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#183328] px-5 py-12 text-white">
@@ -14,7 +30,7 @@ export default async function AdminLoginPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#d4b06a]">Wedding management</p>
         <h1 className="mt-3 text-5xl" style={{ fontFamily: "var(--font-cormorant)" }}>Beheerder</h1>
         <p className="mt-3 text-sm text-white/55">Log in om de uitnodigingen te beheren.</p>
-        <LoginForm />
+        <LoginForm initialError={initialError} />
       </div>
     </main>
   );

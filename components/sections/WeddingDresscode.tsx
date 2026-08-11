@@ -1,4 +1,3 @@
-import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { wedding } from "@/lib/wedding";
 
@@ -31,15 +30,12 @@ export default function WeddingDresscode({ includeDinnerReference = true }: Prop
       <div className="pointer-events-none absolute -right-40 top-1/3 h-96 w-96 rounded-full bg-[#d4b06a]/5 blur-3xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <Reveal>
-          <div className="mx-auto max-w-4xl">
-            <SectionTitle eyebrow="Dresscode" title="Feestelijk, stijlvol en winters" />
-          </div>
-        </Reveal>
+        <div className="mx-auto max-w-4xl">
+          <SectionTitle eyebrow="Dresscode" title="Feestelijk, stijlvol en winters" />
+        </div>
 
         <div className="mt-16 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          <Reveal>
-            <article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 md:p-12">
+          <article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 md:p-12">
               <span className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#d4b06a]/75 to-transparent" />
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#d4b06a]">
                 {wedding.dresscode}
@@ -58,11 +54,9 @@ export default function WeddingDresscode({ includeDinnerReference = true }: Prop
                   </li>
                 ))}
               </ul>
-            </article>
-          </Reveal>
+          </article>
 
-          <Reveal>
-            <aside className="flex h-full flex-col justify-center rounded-[2rem] border border-[#d4b06a]/20 bg-[#10261d]/55 p-8 md:p-12">
+          <aside className="flex h-full flex-col justify-center rounded-[2rem] border border-[#d4b06a]/20 bg-[#10261d]/55 p-8 md:p-12">
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#d4b06a]">
                 Kleurinspiratie
               </p>
@@ -80,8 +74,7 @@ export default function WeddingDresscode({ includeDinnerReference = true }: Prop
                   </li>
                 ))}
               </ul>
-            </aside>
-          </Reveal>
+          </aside>
         </div>
       </div>
     </section>

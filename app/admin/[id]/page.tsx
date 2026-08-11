@@ -7,6 +7,10 @@ import InvitationAccessForm from "@/components/admin/InvitationAccessForm";
 import PrintInvitationSummary, { PrintButton } from "@/components/admin/PrintInvitationSummary";
 import QRCodeCard from "@/components/admin/QRCodeCard";
 import { requireAdmin } from "@/lib/admin-auth";
+import {
+  getDietaryPreferenceLabel,
+  toStoredRsvpAttendees,
+} from "@/lib/invitations/rsvp";
 import { getCanonicalInvitationUrl } from "@/lib/site-url";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -36,11 +40,33 @@ async function updateInvitationType(formData: FormData) {
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
 
+  const { data: currentInvitation, error: lookupError } = await supabase
+    .from("invites")
+    .select(
+      "answered, attending_guests, includes_stadhuis, stadhuis_attending",
+    )
+    .eq("id", id)
+    .single();
+
+  if (lookupError || !currentInvitation) {
+    throw new Error("Uitnodiging kon niet worden geladen.");
+  }
+
+  const stadhuisAttending = !includesStadhuis
+    ? null
+    : currentInvitation.includes_stadhuis === true
+      ? currentInvitation.stadhuis_attending
+      : currentInvitation.answered === true &&
+          currentInvitation.attending_guests === 0
+        ? false
+        : null;
+
   const { error } = await supabase
     .from("invites")
     .update({
       invitation_type: invitationType,
       includes_stadhuis: includesStadhuis,
+      stadhuis_attending: stadhuisAttending,
     })
     .eq("id", id);
 
@@ -78,11 +104,35 @@ export default async function InviteDetails({ params }: Props) {
     notFound();
   }
 
+  const { data: attendeeRows, error: attendeeError } = await supabase
+    .from("rsvp_attendees")
+    .select(
+      "attendee_position, name, dietary_preference, notes, details_complete",
+    )
+    .eq("invite_code", data.code)
+    .order("attendee_position");
+
+  if (attendeeError) {
+    console.error("Admin RSVP attendee lookup failed", attendeeError);
+  }
+
+  const attendees = toStoredRsvpAttendees(attendeeRows);
+
   const invitationType = typeof data.invitation_type === "string" && data.invitation_type in invitationTypes
     ? data.invitation_type as keyof typeof invitationTypes
     : "full_day";
   const includesStadhuis = invitationType === "full_day" && data.includes_stadhuis === true;
   const attendingGuests = typeof data.attending_guests === "number" ? data.attending_guests : null;
+  const stadhuisAttending =
+    typeof data.stadhuis_attending === "boolean"
+      ? data.stadhuis_attending
+      : null;
+  const stadhuisAttendanceLabel =
+    stadhuisAttending === true
+      ? "Komt mee"
+      : stadhuisAttending === false
+        ? "Komt niet mee"
+        : "Nog niet doorgegeven";
   const attendanceLabel = !data.answered
     ? "Nog niet geantwoord"
     : attendingGuests === null
@@ -136,6 +186,9 @@ export default async function InviteDetails({ params }: Props) {
                   ["Aantal uitgenodigd", `${data.allowed_guests} ${data.allowed_guests === 1 ? "persoon" : "personen"}`],
                   ["Aantal aanwezig", data.answered && attendingGuests !== null ? String(attendingGuests) : "—"],
                   ["RSVP-status", attendanceLabel],
+                  ...(includesStadhuis
+                    ? [["Stadhuis", stadhuisAttendanceLabel]]
+                    : []),
                   ["Uitnodigingstype", invitationTypes[invitationType]],
                   ["E-mailadres", data.email || "Niet opgegeven"],
                   ["Telefoonnummer", data.phone || "Niet opgegeven"],
@@ -149,11 +202,77 @@ export default async function InviteDetails({ params }: Props) {
               </dl>
             </section>
 
+            <section
+              className="rounded-3xl border border-white/10 bg-white/[0.05] p-6"
+              aria-labelledby="rsvp-details-heading"
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2
+                    id="rsvp-details-heading"
+                    className="text-2xl"
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                  >
+                    RSVP
+                  </h2>
+                  <p className="mt-2 text-sm text-white/50">{attendanceLabel}</p>
+                </div>
+              </div>
+
+              {attendees.length > 0 ? (
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  {attendees.map((attendee) => (
+                    <article
+                      key={attendee.position}
+                      className="rounded-2xl border border-white/10 bg-black/10 p-5"
+                    >
+                      <p className="text-xs uppercase tracking-[0.16em] text-white/40">
+                        Persoon {attendee.position}
+                      </p>
+                      {attendee.detailsComplete ? (
+                        <>
+                          <h3 className="mt-2 text-xl text-white">
+                            {attendee.name}
+                          </h3>
+                          <p className="mt-3 text-sm text-white/65">
+                            Eetvoorkeur:{" "}
+                            {getDietaryPreferenceLabel(
+                              attendee.dietaryPreference,
+                            )}
+                          </p>
+                          {attendee.notes && (
+                            <p className="mt-2 text-sm leading-relaxed text-white/65">
+                              Opmerking: {attendee.notes}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="mt-2 text-sm text-amber-100">
+                          Gegevens nog niet aangevuld
+                        </p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              ) : data.answered && attendingGuests !== null && attendingGuests > 0 ? (
+                <p className="mt-5 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100">
+                  Persoonsgegevens zijn nog niet beschikbaar. De gast kan de
+                  bestaande RSVP via de uitnodigingslink aanvullen.
+                </p>
+              ) : (
+                <p className="mt-5 text-sm text-white/45">
+                  Er zijn geen gegevens van aanwezige personen.
+                </p>
+              )}
+            </section>
+
             <AdminRsvpForm
               inviteId={data.id}
               allowedGuests={data.allowed_guests}
               answered={data.answered}
               attendingGuests={attendingGuests}
+              includesStadhuis={includesStadhuis}
+              stadhuisAttending={stadhuisAttending}
             />
 
             <section className="rounded-3xl border border-white/10 bg-white/[0.05] p-6" aria-labelledby="type-heading">

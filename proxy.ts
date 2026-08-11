@@ -20,7 +20,11 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const allowed = new Set((process.env.ADMIN_EMAILS ?? "").split(/[;,\n]/).map((value) => value.trim().toLowerCase()).filter(Boolean));
-  const isLogin = request.nextUrl.pathname === "/admin/login";
+  const isDevelopmentLoginSubmit =
+    process.env.NODE_ENV === "development" &&
+    request.nextUrl.pathname === "/admin/login/submit";
+  const isLogin =
+    request.nextUrl.pathname === "/admin/login" || isDevelopmentLoginSubmit;
 
   if (!isLogin && (!user?.email || !allowed.has(user.email.toLowerCase()))) {
     const url = request.nextUrl.clone();

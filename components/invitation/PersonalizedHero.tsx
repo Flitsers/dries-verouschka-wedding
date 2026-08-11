@@ -1,13 +1,12 @@
-import Link from "next/link";
 import Countdown from "@/components/sections/Countdown";
-import Reveal from "@/components/ui/Reveal";
 import { wedding } from "@/lib/wedding";
 
 type Props = {
   code: string;
   familyName: string;
   allowedGuests: number;
-  countdownTarget: string;
+  countdownTargetTimestamp: number;
+  countdownInitialTimestamp: number;
   answered: boolean;
 };
 
@@ -24,7 +23,8 @@ export default function PersonalizedHero({
   code,
   familyName,
   allowedGuests,
-  countdownTarget,
+  countdownTargetTimestamp,
+  countdownInitialTimestamp,
   answered,
 }: Props) {
   const plural = allowedGuests === 2;
@@ -58,7 +58,7 @@ export default function PersonalizedHero({
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-5xl">
-        <Reveal>
+        <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.38em] text-[#d4b06a] sm:text-xs sm:tracking-[0.55em]">
             Persoonlijke uitnodiging
           </p>
@@ -92,30 +92,29 @@ export default function PersonalizedHero({
                 : "Deze uitnodiging is persoonlijk voor jou."}
             </p>
           </div>
-        </Reveal>
-
-        <div className="mx-auto mt-8 max-w-[34rem] sm:mt-10">
-          <Reveal>
-            <Countdown targetDate={countdownTarget} />
-          </Reveal>
         </div>
 
-        <Reveal>
-          <div className="mx-auto mt-9 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-            <Link
-              href={`/i/${code}/rsvp`}
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d4b06a] px-7 py-3.5 text-sm font-semibold text-[#183328] shadow-[0_14px_35px_rgba(0,0,0,0.25)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
-            >
-              {answered ? "Antwoord bekijken of wijzigen" : "Bevestig aanwezigheid"}
-            </Link>
-            <a
-              href="#planning"
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#d4b06a] px-7 py-3.5 text-sm font-medium text-[#d4b06a] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d4b06a] hover:text-[#183328] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
-            >
-              {plural ? "Ontdek jullie uitnodiging" : "Ontdek je uitnodiging"}
-            </a>
-          </div>
-        </Reveal>
+        <div className="mx-auto mt-8 max-w-[34rem] sm:mt-10">
+          <Countdown
+            targetTimestamp={countdownTargetTimestamp}
+            initialTimestamp={countdownInitialTimestamp}
+          />
+        </div>
+
+        <div className="mx-auto mt-9 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+          <a
+            href={`/i/${code}/rsvp`}
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d4b06a] px-7 py-3.5 text-sm font-semibold text-[#183328] shadow-[0_14px_35px_rgba(0,0,0,0.25)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e2c17f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
+          >
+            {answered ? "Antwoord bekijken of wijzigen" : "Bevestig aanwezigheid"}
+          </a>
+          <a
+            href="#planning"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#d4b06a] px-7 py-3.5 text-sm font-medium text-[#d4b06a] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d4b06a] hover:text-[#183328] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5d998]"
+          >
+            {plural ? "Ontdek jullie uitnodiging" : "Ontdek je uitnodiging"}
+          </a>
+        </div>
       </div>
     </section>
   );

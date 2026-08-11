@@ -1,17 +1,24 @@
 import { notFound } from "next/navigation";
 import RSVPWizard from "@/components/rsvp/RSVPWizard";
 import { isInvitationType } from "@/app/i/[code]/invitation-types";
-import { getPublicInvitationByCode } from "@/lib/invitations/server";
+import { getPublicInvitationRsvpByCode } from "@/lib/invitations/server";
 
 type Props = {
   params: Promise<{
     code: string;
   }>;
+  searchParams: Promise<{
+    submission?: string | string[];
+  }>;
 };
 
-export default async function RSVPPage({ params }: Props) {
+const fallbackSubmissionError =
+  "Er ging iets mis bij het opslaan van je antwoord. Probeer het opnieuw.";
+
+export default async function RSVPPage({ params, searchParams }: Props) {
   const { code } = await params;
-  const invitation = await getPublicInvitationByCode(code);
+  const { submission } = await searchParams;
+  const invitation = await getPublicInvitationRsvpByCode(code);
 
   if (!invitation) {
     notFound();
@@ -20,6 +27,8 @@ export default async function RSVPPage({ params }: Props) {
   if (!isInvitationType(invitation.invitation_type)) {
     notFound();
   }
+
+  const formId = `rsvp-wizard-${invitation.code}`;
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[#183328] px-5 py-16 text-white sm:px-6 sm:py-24">
@@ -55,10 +64,19 @@ export default async function RSVPPage({ params }: Props) {
         </div>
 
         <RSVPWizard
+          formId={formId}
           code={invitation.code}
           familyName={invitation.family_name}
           allowedGuests={invitation.allowed_guests}
+          includesStadhuis={invitation.includes_stadhuis}
           initialAttendingGuests={invitation.answered ? invitation.attending_guests : null}
+          initialStadhuisAttending={
+            invitation.answered ? invitation.stadhuis_attending : null
+          }
+          initialAttendees={invitation.attendees}
+          initialSubmitError={
+            submission === "failed" ? fallbackSubmissionError : null
+          }
         />
 
       </div>

@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { generateInvitationCode } from "@/lib/invitations/generator";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-type CreateInviteState = {
+export type CreateInviteState = {
   error: string | null;
 };
 

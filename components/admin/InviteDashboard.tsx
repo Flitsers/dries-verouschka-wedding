@@ -4,7 +4,9 @@ import { CheckCircle2, Clock3, ExternalLink, Plus, Printer, Search, Users, XCirc
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import DeleteInviteButton from "@/components/admin/DeleteInviteButton";
+import FoodOverviewSection from "@/components/admin/FoodOverviewSection";
 import LogoutButton from "@/components/admin/LogoutButton";
+import type { AdminFoodOverview } from "@/lib/admin/food-overview-types";
 
 type Invite = {
   id: string;
@@ -16,10 +18,12 @@ type Invite = {
   answered: boolean;
   invitation_type: string | null;
   includes_stadhuis: boolean;
+  stadhuis_attending: boolean | null;
 };
 
 type Props = {
   invites: Invite[];
+  foodOverview: AdminFoodOverview;
 };
 
 type Filter = "all" | "yes" | "no" | "pending" | "received";
@@ -107,7 +111,7 @@ function InviteActions({ invite }: { invite: Invite }) {
   );
 }
 
-export default function InviteDashboard({ invites }: Props) {
+export default function InviteDashboard({ invites, foodOverview }: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [invitationTypeFilter, setInvitationTypeFilter] = useState<"all" | InvitationType>("all");
@@ -140,12 +144,27 @@ export default function InviteDashboard({ invites }: Props) {
   const stadhuisAttending = stadhuisInvites.reduce(
     (total, invite) => {
       const attending = invite.attending_guests;
-      return total + (typeof attending === "number" && Number.isInteger(attending) ? attending : 0);
+      return total +
+        (invite.stadhuis_attending === true &&
+        typeof attending === "number" &&
+        Number.isInteger(attending)
+          ? attending
+          : 0);
     },
     0,
   );
   const stadhuisPending = stadhuisInvites.reduce(
-    (total, invite) => total + getPendingGuestCount(invite),
+    (total, invite) => {
+      if (!invite.answered) return total + invite.allowed_guests;
+      if (
+        invite.stadhuis_attending === null &&
+        typeof invite.attending_guests === "number" &&
+        invite.attending_guests > 0
+      ) {
+        return total + invite.attending_guests;
+      }
+      return total;
+    },
     0,
   );
   const eventAttendance = [
@@ -272,6 +291,8 @@ export default function InviteDashboard({ invites }: Props) {
             ))}
           </div>
         </section>
+
+        <FoodOverviewSection overview={foodOverview} />
 
         <section className="mt-10 overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#10261d]/55 shadow-[0_20px_50px_rgba(0,0,0,0.18)]">
           <div className="flex flex-col gap-5 border-b border-white/10 p-5 md:flex-row md:items-center md:justify-between md:p-6">

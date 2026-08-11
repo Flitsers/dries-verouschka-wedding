@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Reveal from "@/components/ui/Reveal";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { wedding } from "@/lib/wedding";
 
@@ -47,14 +46,12 @@ export default function WeddingHotels() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-2/3 -translate-x-1/2 rounded-full bg-[#d4b06a]/5 blur-3xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <Reveal>
-          <div className="mx-auto max-w-3xl">
-            <SectionTitle eyebrow="Overnachten" title="Aanbevolen overnachtingen" />
-            <p className="mx-auto mt-7 max-w-xl text-center text-lg leading-relaxed text-white/65">
-              Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.
-            </p>
-          </div>
-        </Reveal>
+        <div className="mx-auto max-w-3xl">
+          <SectionTitle eyebrow="Overnachten" title="Aanbevolen overnachtingen" />
+          <p className="mx-auto mt-7 max-w-xl text-center text-lg leading-relaxed text-white/65">
+            Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.
+          </p>
+        </div>
 
         <div className="mx-auto mt-20 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-6">
           {wedding.hotels.map((hotel, index) => {
@@ -63,10 +60,9 @@ export default function WeddingHotels() {
             return (
               <div
                 key={hotel.name}
-                className={`min-w-0 h-full xl:col-span-2 [&>div]:h-full ${index === 3 ? "xl:col-start-2" : ""}`}
+                className={`min-w-0 h-full xl:col-span-2 ${index === 3 ? "xl:col-start-2" : ""}`}
               >
-                <Reveal>
-                  <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#173027]/85 shadow-[0_24px_80px_rgba(0,0,0,0.18)] transition duration-500 hover:-translate-y-1 hover:border-[#d4b06a]/40 hover:shadow-[0_28px_90px_rgba(212,176,106,0.09)]">
+                <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#173027]/85 shadow-[0_24px_80px_rgba(0,0,0,0.18)] transition duration-500 hover:-translate-y-1 hover:border-[#d4b06a]/40 hover:shadow-[0_28px_90px_rgba(212,176,106,0.09)]">
                     <div
                       className={`relative h-56 shrink-0 overflow-hidden border-b border-white/10 sm:h-60 ${visual.background ?? "bg-[#13271d]"}`}
                     >
@@ -125,8 +121,7 @@ export default function WeddingHotels() {
                         </div>
                       )}
                     </div>
-                  </article>
-                </Reveal>
+                </article>
               </div>
             );
           })}

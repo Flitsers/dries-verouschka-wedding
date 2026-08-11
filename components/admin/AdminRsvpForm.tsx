@@ -8,6 +8,8 @@ type Props = {
   allowedGuests: number;
   answered: boolean;
   attendingGuests: number | null;
+  includesStadhuis: boolean;
+  stadhuisAttending: boolean | null;
 };
 
 const initialState = { error: null as string | null, success: null as string | null };
@@ -24,7 +26,14 @@ function currentLabel(allowedGuests: number, answered: boolean, attendingGuests:
   return `${attendingGuests} van ${allowedGuests} aanwezig`;
 }
 
-export default function AdminRsvpForm({ inviteId, allowedGuests, answered, attendingGuests }: Props) {
+export default function AdminRsvpForm({
+  inviteId,
+  allowedGuests,
+  answered,
+  attendingGuests,
+  includesStadhuis,
+  stadhuisAttending,
+}: Props) {
   const [state, formAction, pending] = useActionState(updateRsvp, initialState);
 
   function confirmReset(event: React.FormEvent<HTMLFormElement>) {
@@ -50,7 +59,7 @@ export default function AdminRsvpForm({ inviteId, allowedGuests, answered, atten
 
       <form action={formAction} onSubmit={confirmReset} className="mt-5">
         <input type="hidden" name="invite_id" value={inviteId} />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="sr-only" htmlFor={`rsvp-value-${inviteId}`}>RSVP-status</label>
           <select
             id={`rsvp-value-${inviteId}`}
@@ -64,6 +73,26 @@ export default function AdminRsvpForm({ inviteId, allowedGuests, answered, atten
             <option value="1">{allowedGuests === 1 ? "Aanwezig" : "1 persoon aanwezig"}</option>
             {allowedGuests === 2 && <option value="2">2 personen aanwezig</option>}
           </select>
+          {includesStadhuis && (
+            <label className="w-full sm:max-w-xs">
+              <span className="mb-2 block text-xs uppercase tracking-[0.12em] text-white/40">
+                Stadhuis
+              </span>
+              <select
+                name="stadhuis_attending"
+                defaultValue={
+                  stadhuisAttending === null
+                    ? ""
+                    : String(stadhuisAttending)
+                }
+                className="w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none focus:border-[#d4b06a]"
+              >
+                <option value="">Nog niet doorgegeven</option>
+                <option value="true">Komt mee</option>
+                <option value="false">Komt niet mee</option>
+              </select>
+            </label>
+          )}
           <button type="submit" disabled={pending} className="w-full rounded-full border border-[#d4b06a] px-5 py-3 text-sm text-[#d4b06a] transition hover:bg-[#d4b06a] hover:text-[#183328] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
             {pending ? "Opslaan..." : "RSVP opslaan"}
           </button>
