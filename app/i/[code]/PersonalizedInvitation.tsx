@@ -19,6 +19,7 @@ import {
   getRequestTimestamp,
 } from "@/lib/invitations/countdown";
 import {
+  getRsvpDeadlineText,
   getWeddingScheduleEvent,
   getWeddingScheduleTime,
   wedding,
@@ -149,6 +150,7 @@ export default function PersonalizedInvitation({
 }: Props) {
   const plural = allowedGuests === 2;
   const countdownInitialTimestamp = getRequestTimestamp();
+  const rsvpDeadlineText = getRsvpDeadlineText();
   const visibleEvents =
     invitationType === "full_day" && includesStadhuis
       ? [toTimelineEvent(cityHall), ...eventsByInvitationType.full_day]
@@ -212,6 +214,9 @@ export default function PersonalizedInvitation({
                 </a>
               </div>
             )}
+            <p className="mx-auto mt-7 max-w-lg text-center text-sm leading-relaxed text-[#f5d998]/80">
+              Gelieve ten laatste op {rsvpDeadlineText} te antwoorden.
+            </p>
           </div>
         </section>
       </main>

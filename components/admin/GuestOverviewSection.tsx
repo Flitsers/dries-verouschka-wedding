@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Search, Users, X } from "lucide-react";
+import { Check, Copy, Download, Search, Users, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type {
@@ -262,14 +262,32 @@ export default function GuestOverviewSection({ overview }: Props) {
           </p>
         </div>
         {overview.invitations.length > 0 && (
-          <button
-            type="button"
-            onClick={copyOverview}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#d4b06a]/70 px-5 py-2.5 text-sm font-medium text-[#f5d998] transition hover:bg-[#d4b06a] hover:text-[#183328] sm:w-auto"
-          >
-            {copied ? <Check size={17} aria-hidden="true" /> : <Copy size={17} aria-hidden="true" />}
-            <span aria-live="polite">{copied ? "Gekopieerd!" : "Kopieer gastenoverzicht"}</span>
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
+            <button
+              type="button"
+              onClick={copyOverview}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#d4b06a]/70 px-5 py-2.5 text-sm font-medium text-[#f5d998] transition hover:bg-[#d4b06a] hover:text-[#183328] sm:w-auto"
+            >
+              {copied ? <Check size={17} aria-hidden="true" /> : <Copy size={17} aria-hidden="true" />}
+              <span aria-live="polite">{copied ? "Gekopieerd!" : "Kopieer gastenoverzicht"}</span>
+            </button>
+            <a
+              href="/admin/export?type=guests"
+              download
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-white/75 transition hover:border-[#d4b06a]/70 hover:text-[#f5d998] sm:w-auto"
+            >
+              <Download size={17} aria-hidden="true" />
+              Exporteer gastenlijst
+            </a>
+            <a
+              href="/admin/export?type=food"
+              download
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-white/75 transition hover:border-[#d4b06a]/70 hover:text-[#f5d998] sm:w-auto"
+            >
+              <Download size={17} aria-hidden="true" />
+              Exporteer eten &amp; opmerkingen
+            </a>
+          </div>
         )}
       </div>
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import RSVPWizard from "@/components/rsvp/RSVPWizard";
 import { isInvitationType } from "@/app/i/[code]/invitation-types";
 import { getPublicInvitationRsvpByCode } from "@/lib/invitations/server";
+import { getRsvpDeadlineText } from "@/lib/wedding";
 
 type Props = {
   params: Promise<{
@@ -29,6 +30,7 @@ export default async function RSVPPage({ params, searchParams }: Props) {
   }
 
   const formId = `rsvp-wizard-${invitation.code}`;
+  const rsvpDeadlineText = getRsvpDeadlineText();
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[#183328] px-5 py-16 text-white sm:px-6 sm:py-24">
@@ -62,6 +64,10 @@ export default async function RSVPPage({ params, searchParams }: Props) {
           <span className="font-serif text-2xl text-[#d4b06a]">{invitation.allowed_guests}</span>
           <span>{invitation.allowed_guests === 1 ? "persoon uitgenodigd" : "personen uitgenodigd"}</span>
         </div>
+
+        <p className="mt-5 text-sm leading-relaxed text-[#f5d998]/80">
+          Gelieve ten laatste op {rsvpDeadlineText} te antwoorden.
+        </p>
 
         <RSVPWizard
           formId={formId}

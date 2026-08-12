@@ -24,6 +24,7 @@ export const wedding = {
   event: {
     date: "2026-12-19",
     dateText: "19 december 2026",
+    rsvpDeadline: "2026-12-05",
   },
 
   venue: {
@@ -115,6 +116,39 @@ export const wedding = {
     },
   ],
 };
+
+function formatDutchCalendarDate(isoDate: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+
+  if (!match) {
+    throw new Error(`Ongeldige centrale kalenderdatum: ${isoDate}`);
+  }
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw new Error(`Ongeldige centrale kalenderdatum: ${isoDate}`);
+  }
+
+  return new Intl.DateTimeFormat("nl-BE", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Brussels",
+  }).format(date);
+}
+
+export function getRsvpDeadlineText() {
+  return formatDutchCalendarDate(wedding.event.rsvpDeadline);
+}
 
 export function getWeddingScheduleEvent(title: WeddingScheduleTitle) {
   const event = wedding.schedule.find((scheduleEvent) => scheduleEvent.title === title);
