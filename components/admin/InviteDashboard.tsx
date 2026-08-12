@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import DeleteInviteButton from "@/components/admin/DeleteInviteButton";
 import FoodOverviewSection from "@/components/admin/FoodOverviewSection";
+import GuestOverviewSection from "@/components/admin/GuestOverviewSection";
 import LogoutButton from "@/components/admin/LogoutButton";
 import type { AdminFoodOverview } from "@/lib/admin/food-overview-types";
+import type { AdminGuestOverview } from "@/lib/admin/guest-overview-types";
 
 type Invite = {
   id: string;
@@ -24,6 +26,7 @@ type Invite = {
 type Props = {
   invites: Invite[];
   foodOverview: AdminFoodOverview;
+  guestOverview: AdminGuestOverview;
 };
 
 type Filter = "all" | "yes" | "no" | "pending" | "received";
@@ -111,7 +114,7 @@ function InviteActions({ invite }: { invite: Invite }) {
   );
 }
 
-export default function InviteDashboard({ invites, foodOverview }: Props) {
+export default function InviteDashboard({ invites, foodOverview, guestOverview }: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [invitationTypeFilter, setInvitationTypeFilter] = useState<"all" | InvitationType>("all");
@@ -291,6 +294,8 @@ export default function InviteDashboard({ invites, foodOverview }: Props) {
             ))}
           </div>
         </section>
+
+        <GuestOverviewSection overview={guestOverview} />
 
         <FoodOverviewSection overview={foodOverview} />
 
