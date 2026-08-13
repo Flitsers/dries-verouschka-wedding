@@ -9,6 +9,7 @@ import {
   isDietaryPreference,
   RSVP_ATTENDEE_NAME_MAX_LENGTH,
   RSVP_ATTENDEE_NOTES_MAX_LENGTH,
+  RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH,
   type DietaryPreference,
   type StoredRsvpAttendee,
 } from "@/lib/invitations/rsvp";
@@ -32,6 +33,7 @@ type AttendeeDraft = {
   name: string;
   dietaryPreference: DietaryPreference;
   notes: string;
+  songRequest: string;
 };
 
 function getExistingForm(formId: string): HTMLFormElement | null {
@@ -103,6 +105,7 @@ function createAttendeeDrafts(
       name: completeAttendee?.name ?? "",
       dietaryPreference: completeAttendee?.dietaryPreference ?? "none",
       notes: completeAttendee?.notes ?? "",
+      songRequest: completeAttendee?.songRequest ?? "",
     };
   });
 }
@@ -120,6 +123,9 @@ function getInitialAttendees(
       `attendee_${position}_dietary_preference`,
     );
     const notes = form.elements.namedItem(`attendee_${position}_notes`);
+    const songRequest = form.elements.namedItem(
+      `attendee_${position}_song_request`,
+    );
     const fallbackAttendee = fallback.find(
       (candidate) => candidate.position === position,
     );
@@ -143,6 +149,10 @@ function getInitialAttendees(
         notes instanceof HTMLTextAreaElement
           ? notes.value
           : completeFallbackAttendee?.notes ?? "",
+      songRequest:
+        songRequest instanceof HTMLInputElement
+          ? songRequest.value
+          : completeFallbackAttendee?.songRequest ?? "",
     };
   });
 }
@@ -566,6 +576,28 @@ export default function RSVPWizard({
                       Maximaal 500 tekens
                     </span>
                   </label>
+                  <label className="sm:col-span-2 border-t border-white/[0.07] pt-5">
+                    <span className="text-sm text-white/60">Verzoeknummer</span>
+                    <span className="mt-1 block text-xs leading-relaxed text-white/40">
+                      Welk nummer wil je graag horen op het avondfeest?
+                    </span>
+                    <input
+                      name={`attendee_${attendee.position}_song_request`}
+                      value={attendee.songRequest}
+                      onChange={(event) =>
+                        updateAttendee(attendee.position, {
+                          songRequest: event.target.value,
+                        })
+                      }
+                      disabled={!active}
+                      maxLength={RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH}
+                      placeholder="Artiest – Titel"
+                      className="mt-2 w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none transition placeholder:text-white/30 focus:border-[#d4b06a]"
+                    />
+                    <span className="mt-1 block text-right text-xs text-white/35">
+                      Optioneel · maximaal 200 tekens
+                    </span>
+                  </label>
                 </div>
               </fieldset>
             );
@@ -714,6 +746,21 @@ export default function RSVPWizard({
                 >
                   Opmerking: <span data-rsvp-summary-notes>{attendee.notes}</span>
                 </p>
+                <div
+                  className="mt-3 border-t border-white/[0.07] pt-3"
+                  data-rsvp-summary-song-request-row
+                  hidden={!attendee.songRequest.trim()}
+                >
+                  <p className="text-xs uppercase tracking-[0.13em] text-white/35">
+                    Verzoeknummer
+                  </p>
+                  <p
+                    className="mt-1 break-words text-sm leading-relaxed text-[#f5d998]"
+                    data-rsvp-summary-song-request
+                  >
+                    {attendee.songRequest}
+                  </p>
+                </div>
               </article>
             );
           })}

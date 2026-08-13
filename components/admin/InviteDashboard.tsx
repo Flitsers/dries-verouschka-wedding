@@ -7,8 +7,10 @@ import DeleteInviteButton from "@/components/admin/DeleteInviteButton";
 import FoodOverviewSection from "@/components/admin/FoodOverviewSection";
 import GuestOverviewSection from "@/components/admin/GuestOverviewSection";
 import LogoutButton from "@/components/admin/LogoutButton";
+import SongRequestOverviewSection from "@/components/admin/SongRequestOverviewSection";
 import type { AdminFoodOverview } from "@/lib/admin/food-overview-types";
 import type { AdminGuestOverview } from "@/lib/admin/guest-overview-types";
+import type { AdminSongRequestOverview } from "@/lib/admin/song-request-overview-types";
 
 type Invite = {
   id: string;
@@ -27,6 +29,7 @@ type Props = {
   invites: Invite[];
   foodOverview: AdminFoodOverview;
   guestOverview: AdminGuestOverview;
+  songRequestOverview: AdminSongRequestOverview;
 };
 
 type Filter = "all" | "yes" | "no" | "pending" | "received";
@@ -114,7 +117,12 @@ function InviteActions({ invite }: { invite: Invite }) {
   );
 }
 
-export default function InviteDashboard({ invites, foodOverview, guestOverview }: Props) {
+export default function InviteDashboard({
+  invites,
+  foodOverview,
+  guestOverview,
+  songRequestOverview,
+}: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [invitationTypeFilter, setInvitationTypeFilter] = useState<"all" | InvitationType>("all");
@@ -298,6 +306,8 @@ export default function InviteDashboard({ invites, foodOverview, guestOverview }
         <GuestOverviewSection overview={guestOverview} />
 
         <FoodOverviewSection overview={foodOverview} />
+
+        <SongRequestOverviewSection overview={songRequestOverview} />
 
         <section className="mt-10 overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#10261d]/55 shadow-[0_20px_50px_rgba(0,0,0,0.18)]">
           <div className="flex flex-col gap-5 border-b border-white/10 p-5 md:flex-row md:items-center md:justify-between md:p-6">

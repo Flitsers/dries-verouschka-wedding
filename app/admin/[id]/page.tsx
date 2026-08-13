@@ -107,7 +107,7 @@ export default async function InviteDetails({ params }: Props) {
   const { data: attendeeRows, error: attendeeError } = await supabase
     .from("rsvp_attendees")
     .select(
-      "attendee_position, name, dietary_preference, notes, details_complete",
+      "attendee_position, name, dietary_preference, notes, song_request, details_complete",
     )
     .eq("invite_code", data.code)
     .order("attendee_position");
@@ -244,6 +244,16 @@ export default async function InviteDetails({ params }: Props) {
                             <p className="mt-2 text-sm leading-relaxed text-white/65">
                               Opmerking: {attendee.notes}
                             </p>
+                          )}
+                          {attendee.songRequest && (
+                            <div className="mt-3 border-t border-white/[0.07] pt-3">
+                              <p className="text-xs uppercase tracking-[0.13em] text-white/35">
+                                Verzoeknummer
+                              </p>
+                              <p className="mt-1 break-words text-sm leading-relaxed text-[#f5d998]">
+                                {attendee.songRequest}
+                              </p>
+                            </div>
                           )}
                         </>
                       ) : (

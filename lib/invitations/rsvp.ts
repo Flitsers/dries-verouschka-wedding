@@ -11,6 +11,7 @@ export type RsvpAttendee = {
   name: string;
   dietaryPreference: DietaryPreference;
   notes: string | null;
+  songRequest: string | null;
 };
 
 export type StoredRsvpAttendee =
@@ -22,11 +23,13 @@ export type StoredRsvpAttendee =
       name: null;
       dietaryPreference: "none";
       notes: null;
+      songRequest: null;
       detailsComplete: false;
     };
 
 export const RSVP_ATTENDEE_NAME_MAX_LENGTH = 150;
 export const RSVP_ATTENDEE_NOTES_MAX_LENGTH = 500;
+export const RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH = 200;
 
 const dietaryPreferenceLabels: Record<DietaryPreference, string> = {
   none: "Geen voorkeur",
@@ -61,6 +64,7 @@ export function toStoredRsvpAttendees(
       const name = row.name;
       const dietaryPreference = row.dietary_preference;
       const notes = row.notes;
+      const songRequest = row.song_request;
       const detailsComplete = row.details_complete;
 
       if ((position !== 1 && position !== 2) || typeof detailsComplete !== "boolean") {
@@ -71,7 +75,8 @@ export function toStoredRsvpAttendees(
         if (
           name !== null ||
           dietaryPreference !== "none" ||
-          notes !== null
+          notes !== null ||
+          songRequest !== null
         ) {
           return null;
         }
@@ -81,6 +86,7 @@ export function toStoredRsvpAttendees(
           name: null,
           dietaryPreference: "none",
           notes: null,
+          songRequest: null,
           detailsComplete: false,
         };
       }
@@ -92,7 +98,10 @@ export function toStoredRsvpAttendees(
         !isDietaryPreference(dietaryPreference) ||
         !(notes === null || typeof notes === "string") ||
         (typeof notes === "string" &&
-          notes.length > RSVP_ATTENDEE_NOTES_MAX_LENGTH)
+          notes.length > RSVP_ATTENDEE_NOTES_MAX_LENGTH) ||
+        !(songRequest === null || typeof songRequest === "string") ||
+        (typeof songRequest === "string" &&
+          songRequest.length > RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH)
       ) {
         return null;
       }
@@ -102,6 +111,7 @@ export function toStoredRsvpAttendees(
         name,
         dietaryPreference,
         notes,
+        songRequest,
         detailsComplete: true,
       };
     })
@@ -117,10 +127,11 @@ export function toRsvpAttendees(values: unknown): RsvpAttendee[] {
       ): attendee is Extract<StoredRsvpAttendee, { detailsComplete: true }> =>
         attendee.detailsComplete,
     )
-    .map(({ position, name, dietaryPreference, notes }) => ({
+    .map(({ position, name, dietaryPreference, notes, songRequest }) => ({
       position,
       name,
       dietaryPreference,
       notes,
+      songRequest,
     }));
 }

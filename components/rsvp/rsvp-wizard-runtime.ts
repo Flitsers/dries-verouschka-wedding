@@ -147,6 +147,9 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       const notes = form.elements.namedItem(
         `attendee_${position}_notes`,
       ) as HTMLTextAreaElement | null;
+      const songRequest = form.elements.namedItem(
+        `attendee_${position}_song_request`,
+      ) as HTMLInputElement | null;
       const nameSummary = summary.querySelector<HTMLElement>(
         "[data-rsvp-summary-name]",
       );
@@ -158,6 +161,12 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       );
       const notesSummary = summary.querySelector<HTMLElement>(
         "[data-rsvp-summary-notes]",
+      );
+      const songRequestRow = summary.querySelector<HTMLElement>(
+        "[data-rsvp-summary-song-request-row]",
+      );
+      const songRequestSummary = summary.querySelector<HTMLElement>(
+        "[data-rsvp-summary-song-request]",
       );
 
       if (nameSummary) {
@@ -171,6 +180,12 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       const notesValue = notes?.value.trim() ?? "";
       if (notesRow) notesRow.hidden = notesValue === "";
       if (notesSummary) notesSummary.textContent = notesValue;
+
+      const songRequestValue = songRequest?.value.trim() ?? "";
+      if (songRequestRow) songRequestRow.hidden = songRequestValue === "";
+      if (songRequestSummary) {
+        songRequestSummary.textContent = songRequestValue;
+      }
     }
   };
 

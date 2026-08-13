@@ -9,6 +9,7 @@ import {
   isDietaryPreference,
   RSVP_ATTENDEE_NAME_MAX_LENGTH,
   RSVP_ATTENDEE_NOTES_MAX_LENGTH,
+  RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH,
   toStoredRsvpAttendees,
   type RsvpAttendee,
   type StoredRsvpAttendee,
@@ -106,7 +107,10 @@ function hasValidRsvpAttendees(
         attendee.name.length <= RSVP_ATTENDEE_NAME_MAX_LENGTH &&
         isDietaryPreference(attendee.dietaryPreference) &&
         (attendee.notes === null ||
-          attendee.notes.length <= RSVP_ATTENDEE_NOTES_MAX_LENGTH),
+          attendee.notes.length <= RSVP_ATTENDEE_NOTES_MAX_LENGTH) &&
+        (attendee.songRequest === null ||
+          attendee.songRequest.length <=
+            RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH),
     )
   );
 }
@@ -161,7 +165,7 @@ export async function getPublicInvitationRsvpByCode(
   const { data: attendeeRows, error: attendeeError } = await supabase
     .from("rsvp_attendees")
     .select(
-      "attendee_position, name, dietary_preference, notes, details_complete",
+      "attendee_position, name, dietary_preference, notes, song_request, details_complete",
     )
     .eq("invite_code", invitation.code)
     .order("attendee_position");
@@ -247,6 +251,7 @@ export async function submitPublicInvitationRsvp(
         name: attendee.name.trim(),
         dietary_preference: attendee.dietaryPreference,
         notes: attendee.notes?.trim() || null,
+        song_request: attendee.songRequest?.trim() || null,
       })),
     },
   );

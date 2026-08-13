@@ -1,7 +1,10 @@
 import "server-only";
 
 import type { InvitationType } from "@/app/i/[code]/invitation-types";
-import type { DietaryPreference } from "@/lib/invitations/rsvp";
+import {
+  RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH,
+  type DietaryPreference,
+} from "@/lib/invitations/rsvp";
 
 type RsvpStatus = "pending" | "attending" | "absent";
 
@@ -10,6 +13,7 @@ type ExportAttendee = {
   name: string | null;
   dietaryPreference: DietaryPreference;
   notes: string | null;
+  songRequest: string | null;
   detailsComplete: boolean;
 };
 
@@ -51,6 +55,7 @@ const guestListColumns = [
   "Naam gast",
   "Eetvoorkeur",
   "Opmerkingen",
+  "Verzoeknummer",
   "Uitgenodigd Stadhuis",
   "Stadhuis RSVP",
 ];
@@ -113,6 +118,7 @@ function getAttendee(value: unknown, context: string): ExportAttendee {
       name: null,
       dietaryPreference: "none",
       notes: null,
+      songRequest: null,
       detailsComplete: false,
     };
   }
@@ -121,12 +127,24 @@ function getAttendee(value: unknown, context: string): ExportAttendee {
   const notes = typeof row.notes === "string" && row.notes.trim()
     ? row.notes.trim()
     : null;
+  const songRequest =
+    typeof row.song_request === "string" && row.song_request.trim()
+      ? row.song_request.trim()
+      : null;
+
+  if (
+    songRequest !== null &&
+    songRequest.length > RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH
+  ) {
+    throw new Error(`Ongeldig verzoeknummer in exportdata voor ${context}.`);
+  }
 
   return {
     position,
     name,
     dietaryPreference: getDietaryPreference(row.dietary_preference),
     notes,
+    songRequest,
     detailsComplete: true,
   };
 }
@@ -175,6 +193,7 @@ function getInvitation(value: unknown, index: number): ExportInvitation {
           name: null,
           dietaryPreference: "none" as const,
           notes: null,
+          songRequest: null,
           detailsComplete: false,
         };
       })
@@ -255,7 +274,7 @@ export function buildGuestListCsv(values: unknown) {
     ];
 
     if (invitation.rsvpStatus !== "attending") {
-      rows.push([...sharedValues, "", "", "", ...stadhuisValues]);
+      rows.push([...sharedValues, "", "", "", "", ...stadhuisValues]);
       continue;
     }
 
@@ -267,6 +286,7 @@ export function buildGuestListCsv(values: unknown) {
           : "Gegevens nog niet aangevuld",
         dietaryPreferenceLabels[attendee.dietaryPreference],
         attendee.notes ?? "",
+        attendee.songRequest ?? "",
         ...stadhuisValues,
       ]);
     }

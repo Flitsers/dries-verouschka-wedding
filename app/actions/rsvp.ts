@@ -6,6 +6,7 @@ import {
   isDietaryPreference,
   RSVP_ATTENDEE_NAME_MAX_LENGTH,
   RSVP_ATTENDEE_NOTES_MAX_LENGTH,
+  RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH,
   type RsvpAttendee,
 } from "@/lib/invitations/rsvp";
 
@@ -28,13 +29,15 @@ function parseAttendees(
     const nameKey = `attendee_${position}_name`;
     const dietaryPreferenceKey = `attendee_${position}_dietary_preference`;
     const notesKey = `attendee_${position}_notes`;
+    const songRequestKey = `attendee_${position}_song_request`;
     const isAttending = position <= attendingGuests;
 
     if (!isAttending) {
       if (
         formData.has(nameKey) ||
         formData.has(dietaryPreferenceKey) ||
-        formData.has(notesKey)
+        formData.has(notesKey) ||
+        formData.has(songRequestKey)
       ) {
         return {
           attendees: null,
@@ -48,7 +51,8 @@ function parseAttendees(
     if (
       formData.getAll(nameKey).length !== 1 ||
       formData.getAll(dietaryPreferenceKey).length !== 1 ||
-      formData.getAll(notesKey).length > 1
+      formData.getAll(notesKey).length > 1 ||
+      formData.getAll(songRequestKey).length > 1
     ) {
       return { attendees: null, error: "De persoonsgegevens zijn ongeldig." };
     }
@@ -56,17 +60,20 @@ function parseAttendees(
     const nameValue = formData.get(nameKey);
     const dietaryPreference = formData.get(dietaryPreferenceKey);
     const notesValue = formData.get(notesKey);
+    const songRequestValue = formData.get(songRequestKey);
 
     if (
       typeof nameValue !== "string" ||
       typeof dietaryPreference !== "string" ||
-      !(notesValue === null || typeof notesValue === "string")
+      !(notesValue === null || typeof notesValue === "string") ||
+      !(songRequestValue === null || typeof songRequestValue === "string")
     ) {
       return { attendees: null, error: "De persoonsgegevens zijn ongeldig." };
     }
 
     const name = nameValue.trim();
     const notes = notesValue?.trim() || null;
+    const songRequest = songRequestValue?.trim() || null;
 
     if (!name || name.length > RSVP_ATTENDEE_NAME_MAX_LENGTH) {
       return {
@@ -92,11 +99,22 @@ function parseAttendees(
       };
     }
 
+    if (
+      songRequestValue !== null &&
+      songRequestValue.length > RSVP_ATTENDEE_SONG_REQUEST_MAX_LENGTH
+    ) {
+      return {
+        attendees: null,
+        error: `Het verzoeknummer voor persoon ${position} mag maximaal 200 tekens bevatten.`,
+      };
+    }
+
     attendees.push({
       position,
       name,
       dietaryPreference,
       notes,
+      songRequest,
     });
   }
 

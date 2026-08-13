@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         name,
         dietary_preference,
         notes,
+        song_request,
         details_complete
       )
     `)

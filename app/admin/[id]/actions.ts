@@ -76,7 +76,7 @@ export async function updateRsvp(
       const { data: attendeeRows, error: attendeeError } = await supabase
         .from("rsvp_attendees")
         .select(
-          "attendee_position, name, dietary_preference, notes, details_complete",
+          "attendee_position, name, dietary_preference, notes, song_request, details_complete",
         )
         .eq("invite_code", invite.code)
         .order("attendee_position");
