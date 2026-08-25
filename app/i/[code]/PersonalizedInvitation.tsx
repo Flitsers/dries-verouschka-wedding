@@ -62,7 +62,7 @@ function toTimelineEvent(
 ): TimelineEvent {
   return {
     title,
-    time: event.time,
+    time: getWeddingScheduleStartTime(event.title),
     description: event.description,
   };
 }
