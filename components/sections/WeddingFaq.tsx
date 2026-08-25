@@ -1,7 +1,7 @@
 import WeddingFaqAccordion, {
   type FaqItem,
 } from "@/components/sections/WeddingFaqAccordion";
-import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
+import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
 
 type Props = {
   includeCeremonyDetails?: boolean;
@@ -9,7 +9,7 @@ type Props = {
 
 const ceremonyFaq: FaqItem = {
   question: "Hoe laat worden we verwacht?",
-  answer: `De ceremonie start om ${getWeddingScheduleTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
+  answer: `De ceremonie start om ${getWeddingScheduleStartTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
 };
 
 const generalFaqItems: FaqItem[] = [

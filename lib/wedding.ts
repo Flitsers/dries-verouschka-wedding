@@ -1,9 +1,11 @@
 export type WeddingScheduleTitle =
   | "Stadhuis"
+  | "Ontvangst"
   | "Ceremonie"
-  | "Dagsreceptie"
+  | "Receptie"
   | "Diner"
-  | "Avondreceptie"
+  | "Ontvangst avondgasten"
+  | "Dessert"
   | "Avondfeest"
   | "Midnight snack"
   | "Einde";
@@ -40,25 +42,34 @@ export const wedding = {
       title: "Stadhuis",
     },
     {
-      time: "16:30",
-      title: "Ceremonie",
-      description: "Onze ceremonie start stipt om 16:30.",
+      time: "15:00–15:30",
+      title: "Ontvangst",
     },
     {
-      time: "18:00",
-      title: "Dagsreceptie",
+      time: "15:30–16:30",
+      title: "Ceremonie",
+      description: "Onze ceremonie start stipt om 15:30.",
+    },
+    {
+      time: "16:30–18:00",
+      title: "Receptie",
       description: "We klinken samen op een prachtige dag.",
     },
     {
-      time: "19:00",
+      time: "18:00–21:00",
       title: "Diner",
       description: "Een feestelijk diner met familie en vrienden.",
     },
     {
-      title: "Avondreceptie",
+      time: "20:30–21:00",
+      title: "Ontvangst avondgasten",
     },
     {
-      time: "22:00",
+      time: "21:00–22:30",
+      title: "Dessert",
+    },
+    {
+      time: "22:30",
       title: "Avondfeest",
       description: "De dansvloer gaat open!",
     },
@@ -168,4 +179,15 @@ export function getWeddingScheduleTime(title: WeddingScheduleTitle) {
   }
 
   return event.time;
+}
+
+export function getWeddingScheduleStartTime(title: WeddingScheduleTitle) {
+  const time = getWeddingScheduleTime(title);
+  const startTime = time.match(/^\d{2}:\d{2}/)?.[0];
+
+  if (!startTime) {
+    throw new Error(`Ongeldig centraal tijdstip: ${title}`);
+  }
+
+  return startTime;
 }

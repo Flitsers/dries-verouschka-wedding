@@ -1,10 +1,10 @@
 import type { InvitationType } from "@/app/i/[code]/invitation-types";
-import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
+import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
 
 const countdownTimeByInvitationType: Record<InvitationType, string> = {
-  full_day: getWeddingScheduleTime("Ceremonie"),
-  reception_plus: getWeddingScheduleTime("Dagsreceptie"),
-  evening_only: getWeddingScheduleTime("Avondfeest"),
+  full_day: getWeddingScheduleStartTime("Ceremonie"),
+  reception_plus: getWeddingScheduleStartTime("Receptie"),
+  evening_only: getWeddingScheduleStartTime("Avondfeest"),
 };
 
 // 19 December is standard time (CET) in Europe/Brussels.

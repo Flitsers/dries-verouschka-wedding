@@ -1,5 +1,5 @@
 import SectionTitle from "@/components/ui/SectionTitle";
-import { getWeddingScheduleTime, wedding } from "@/lib/wedding";
+import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
 
 export type PracticalItem = {
   title: string;
@@ -17,7 +17,7 @@ const defaultPracticalItems: PracticalItem[] = [
   },
   {
     title: "Aankomstuur",
-    text: `De ceremonie start om ${getWeddingScheduleTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
+    text: `De ceremonie start om ${getWeddingScheduleStartTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
   },
   {
     title: "Dresscode",

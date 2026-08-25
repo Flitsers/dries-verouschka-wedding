@@ -21,7 +21,7 @@ import {
 import {
   getRsvpDeadlineText,
   getWeddingScheduleEvent,
-  getWeddingScheduleTime,
+  getWeddingScheduleStartTime,
   wedding,
   type WeddingScheduleEvent,
 } from "@/lib/wedding";
@@ -69,31 +69,37 @@ function toTimelineEvent(
 
 const ceremony = getWeddingScheduleEvent("Ceremonie");
 const cityHall = getWeddingScheduleEvent("Stadhuis");
-const dayReception = getWeddingScheduleEvent("Dagsreceptie");
+const arrival = getWeddingScheduleEvent("Ontvangst");
+const reception = getWeddingScheduleEvent("Receptie");
 const dinner = getWeddingScheduleEvent("Diner");
-const eveningReception = getWeddingScheduleEvent("Avondreceptie");
+const eveningArrival = getWeddingScheduleEvent("Ontvangst avondgasten");
+const dessert = getWeddingScheduleEvent("Dessert");
 const party = getWeddingScheduleEvent("Avondfeest");
 const midnightSnack = getWeddingScheduleEvent("Midnight snack");
 const end = getWeddingScheduleEvent("Einde");
 
 const eventsByInvitationType: Record<InvitationType, TimelineEvent[]> = {
   full_day: [
+    toTimelineEvent(arrival),
     toTimelineEvent(ceremony),
-    toTimelineEvent(dayReception),
+    toTimelineEvent(reception),
     toTimelineEvent(dinner),
+    toTimelineEvent(dessert),
     toTimelineEvent(party),
     toTimelineEvent(midnightSnack),
     toTimelineEvent(end),
   ],
   reception_plus: [
-    toTimelineEvent(dayReception),
+    toTimelineEvent(reception),
     toTimelineEvent(dinner),
+    toTimelineEvent(dessert),
     toTimelineEvent(party),
     toTimelineEvent(midnightSnack),
     toTimelineEvent(end),
   ],
   evening_only: [
-    toTimelineEvent(eveningReception),
+    toTimelineEvent(eveningArrival),
+    toTimelineEvent(dessert),
     toTimelineEvent(party),
     toTimelineEvent(midnightSnack),
     toTimelineEvent(end),
@@ -120,7 +126,7 @@ function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
       ? [
           {
             title: "Aankomstuur",
-            text: `De ceremonie start om ${getWeddingScheduleTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
+            text: `De ceremonie start om ${getWeddingScheduleStartTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
           },
         ]
       : []),
