@@ -24,6 +24,7 @@ const publicInvitationFields = [
   "attending_guests",
   "invitation_type",
   "includes_stadhuis",
+  "includes_ceremony",
   "stadhuis_attending",
 ].join(",");
 
@@ -35,6 +36,7 @@ export type PublicInvitation = {
   attending_guests: number | null;
   invitation_type: InvitationType;
   includes_stadhuis: boolean;
+  includes_ceremony: boolean;
   stadhuis_attending: boolean | null;
 };
 
@@ -67,6 +69,7 @@ function toPublicInvitation(value: unknown): PublicInvitation | null {
     typeof value.answered !== "boolean" ||
     !isInvitationType(value.invitation_type) ||
     typeof value.includes_stadhuis !== "boolean" ||
+    typeof value.includes_ceremony !== "boolean" ||
     !(
       value.stadhuis_attending === null ||
       typeof value.stadhuis_attending === "boolean"
@@ -90,6 +93,7 @@ function toPublicInvitation(value: unknown): PublicInvitation | null {
     attending_guests: attendingGuests,
     invitation_type: value.invitation_type,
     includes_stadhuis: value.includes_stadhuis,
+    includes_ceremony: value.includes_ceremony,
     stadhuis_attending: value.stadhuis_attending,
   };
 }

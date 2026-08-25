@@ -31,6 +31,7 @@ export default async function InvitePage({ params }: Props) {
         invitation.invitation_type === "full_day" &&
         invitation.includes_stadhuis === true
       }
+      includesCeremony={invitation.includes_ceremony}
       answered={invitation.answered}
       attendingGuests={invitation.attending_guests}
     />

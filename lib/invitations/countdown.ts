@@ -1,10 +1,13 @@
 import type { InvitationType } from "@/app/i/[code]/invitation-types";
 import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
 
-const countdownTimeByInvitationType: Record<InvitationType, string> = {
-  full_day: getWeddingScheduleStartTime("Ceremonie"),
-  reception_plus: getWeddingScheduleStartTime("Receptie"),
-  evening_only: getWeddingScheduleStartTime("Avondfeest"),
+const firstEventWithoutCeremonyByInvitationType: Record<
+  InvitationType,
+  "Receptie" | "Avondfeest"
+> = {
+  full_day: "Receptie",
+  reception_plus: "Receptie",
+  evening_only: "Avondfeest",
 };
 
 // 19 December is standard time (CET) in Europe/Brussels.
@@ -12,8 +15,12 @@ const belgiumWeddingOffset = "+01:00";
 
 export function getInvitationCountdownTargetTimestamp(
   invitationType: InvitationType,
+  includesCeremony: boolean,
 ) {
-  const eventTime = countdownTimeByInvitationType[invitationType].match(
+  const targetEvent = includesCeremony
+    ? "Ceremonie"
+    : firstEventWithoutCeremonyByInvitationType[invitationType];
+  const eventTime = getWeddingScheduleStartTime(targetEvent).match(
     /^\d{2}:\d{2}/,
   )?.[0];
 

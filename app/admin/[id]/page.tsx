@@ -39,6 +39,7 @@ async function updateInvitationType(formData: FormData) {
 
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
+  const includesCeremony = formData.get("includes_ceremony") === "on";
 
   const { data: currentInvitation, error: lookupError } = await supabase
     .from("invites")
@@ -66,6 +67,7 @@ async function updateInvitationType(formData: FormData) {
     .update({
       invitation_type: invitationType,
       includes_stadhuis: includesStadhuis,
+      includes_ceremony: includesCeremony,
       stadhuis_attending: stadhuisAttending,
     })
     .eq("id", id);
@@ -122,6 +124,7 @@ export default async function InviteDetails({ params }: Props) {
     ? data.invitation_type as keyof typeof invitationTypes
     : "full_day";
   const includesStadhuis = invitationType === "full_day" && data.includes_stadhuis === true;
+  const includesCeremony = data.includes_ceremony === true;
   const attendingGuests = typeof data.attending_guests === "number" ? data.attending_guests : null;
   const stadhuisAttending =
     typeof data.stadhuis_attending === "boolean"
@@ -172,6 +175,11 @@ export default async function InviteDetails({ params }: Props) {
                 Stadhuis
               </span>
             )}
+            {includesCeremony && (
+              <span className="inline-flex rounded-full border border-[#d4b06a]/25 bg-[#d4b06a]/10 px-3 py-1.5 text-xs font-medium text-[#f5d998]">
+                Ceremonie
+              </span>
+            )}
           </div>
         </header>
 
@@ -189,6 +197,7 @@ export default async function InviteDetails({ params }: Props) {
                   ...(includesStadhuis
                     ? [["Stadhuis", stadhuisAttendanceLabel]]
                     : []),
+                  ["Ceremonie", includesCeremony ? "Uitgenodigd" : "Niet uitgenodigd"],
                   ["Uitnodigingstype", invitationTypes[invitationType]],
                   ["E-mailadres", data.email || "Niet opgegeven"],
                   ["Telefoonnummer", data.phone || "Niet opgegeven"],
@@ -293,6 +302,7 @@ export default async function InviteDetails({ params }: Props) {
                 inviteId={data.id}
                 initialInvitationType={invitationType}
                 initialIncludesStadhuis={includesStadhuis}
+                initialIncludesCeremony={includesCeremony}
               />
             </section>
           </div>

@@ -9,6 +9,7 @@ type Props = {
   inviteId: string;
   initialInvitationType: InvitationType;
   initialIncludesStadhuis: boolean;
+  initialIncludesCeremony: boolean;
 };
 
 export default function InvitationAccessForm({
@@ -16,10 +17,14 @@ export default function InvitationAccessForm({
   inviteId,
   initialInvitationType,
   initialIncludesStadhuis,
+  initialIncludesCeremony,
 }: Props) {
   const [invitationType, setInvitationType] = useState(initialInvitationType);
   const [includesStadhuis, setIncludesStadhuis] = useState(
     initialInvitationType === "full_day" && initialIncludesStadhuis,
+  );
+  const [includesCeremony, setIncludesCeremony] = useState(
+    initialIncludesCeremony,
   );
 
   function handleInvitationTypeChange(value: InvitationType) {
@@ -61,6 +66,20 @@ export default function InvitationAccessForm({
         <span>
           <span className="block font-medium">Uitgenodigd voor het Stadhuis</span>
           <span className="mt-1 block text-sm text-white/50">Alleen beschikbaar voor uitnodigingen voor de volledige dag.</span>
+        </span>
+      </label>
+
+      <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/10 px-4 py-4 transition">
+        <input
+          type="checkbox"
+          name="includes_ceremony"
+          checked={includesCeremony}
+          onChange={(event) => setIncludesCeremony(event.target.checked)}
+          className="mt-1 h-4 w-4 accent-[#d4b06a]"
+        />
+        <span>
+          <span className="block font-medium">Uitgenodigd voor ceremonie</span>
+          <span className="mt-1 block text-sm text-white/50">Kan onafhankelijk van het uitnodigingstype worden aangepast.</span>
         </span>
       </label>
     </form>

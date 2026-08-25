@@ -23,11 +23,13 @@ export default function NewInviteForm({ initialError = null }: Props) {
   const [email, setEmail] = useState("");
   const [invitationType, setInvitationType] = useState("full_day");
   const [includesStadhuis, setIncludesStadhuis] = useState(false);
+  const [includesCeremony, setIncludesCeremony] = useState(true);
   const useDevelopmentFallback =
     process.env.NODE_ENV === "development" && !hydrated;
 
   function handleInvitationTypeChange(value: string) {
     setInvitationType(value);
+    setIncludesCeremony(value === "full_day");
 
     if (value !== "full_day") {
       setIncludesStadhuis(false);
@@ -76,6 +78,20 @@ export default function NewInviteForm({ initialError = null }: Props) {
         <span>
           <span className="block font-medium">Uitgenodigd voor het Stadhuis</span>
           <span className="mt-1 block text-sm text-white/50">Alleen beschikbaar voor uitnodigingen voor de volledige dag.</span>
+        </span>
+      </label>
+
+      <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4 transition">
+        <input
+          type="checkbox"
+          name="includes_ceremony"
+          checked={includesCeremony}
+          onChange={(event) => setIncludesCeremony(event.target.checked)}
+          className="mt-1 h-4 w-4 accent-[#d4b06a]"
+        />
+        <span>
+          <span className="block font-medium">Uitgenodigd voor ceremonie</span>
+          <span className="mt-1 block text-sm text-white/50">Kan onafhankelijk van het uitnodigingstype worden aangepast.</span>
         </span>
       </label>
 

@@ -32,6 +32,7 @@ type Props = {
   allowedGuests: number;
   invitationType: InvitationType;
   includesStadhuis: boolean;
+  includesCeremony: boolean;
   answered: boolean;
   attendingGuests: number | null;
 };
@@ -80,8 +81,6 @@ const end = getWeddingScheduleEvent("Einde");
 
 const eventsByInvitationType: Record<InvitationType, TimelineEvent[]> = {
   full_day: [
-    toTimelineEvent(arrival),
-    toTimelineEvent(ceremony),
     toTimelineEvent(reception),
     toTimelineEvent(dinner),
     toTimelineEvent(dessert),
@@ -139,16 +138,20 @@ export default function PersonalizedInvitation({
   allowedGuests,
   invitationType,
   includesStadhuis,
+  includesCeremony,
   answered,
   attendingGuests,
 }: Props) {
   const plural = allowedGuests === 2;
   const countdownInitialTimestamp = getRequestTimestamp();
   const rsvpDeadlineText = getRsvpDeadlineText();
-  const visibleEvents =
-    invitationType === "full_day" && includesStadhuis
-      ? [toTimelineEvent(cityHall), ...eventsByInvitationType.full_day]
-      : eventsByInvitationType[invitationType];
+  const visibleEvents = [
+    ...(includesStadhuis ? [toTimelineEvent(cityHall)] : []),
+    ...(includesCeremony
+      ? [toTimelineEvent(arrival), toTimelineEvent(ceremony)]
+      : []),
+    ...eventsByInvitationType[invitationType],
+  ];
 
   return (
     <>
@@ -169,6 +172,7 @@ export default function PersonalizedInvitation({
           allowedGuests={allowedGuests}
           countdownTargetTimestamp={getInvitationCountdownTargetTimestamp(
             invitationType,
+            includesCeremony,
           )}
           countdownInitialTimestamp={countdownInitialTimestamp}
           answered={answered}

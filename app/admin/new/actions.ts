@@ -35,6 +35,7 @@ export async function createInvite(
 
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
+  const includesCeremony = formData.get("includes_ceremony") === "on";
 
   for (let attempt = 0; attempt < MAX_CODE_INSERT_ATTEMPTS; attempt += 1) {
     const code = generateInvitationCode();
@@ -47,6 +48,7 @@ export async function createInvite(
         email,
         invitation_type: invitationType,
         includes_stadhuis: includesStadhuis,
+        includes_ceremony: includesCeremony,
         answered: false,
         attending_guests: null,
       });
