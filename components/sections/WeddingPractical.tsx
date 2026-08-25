@@ -54,7 +54,7 @@ export default function WeddingPractical({ items = defaultPracticalItems }: Prop
           </p>
         </div>
 
-        <div className="mt-20 grid gap-x-12 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`mt-20 grid gap-x-12 gap-y-0 ${items.length === 4 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3"}`}>
           {items.map((item, index) => (
             <article key={item.title} className="group border-t border-white/10 py-8 md:py-10">
                 <div className="flex items-baseline justify-between gap-4">

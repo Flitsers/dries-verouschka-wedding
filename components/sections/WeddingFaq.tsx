@@ -1,43 +1,45 @@
 import WeddingFaqAccordion, {
   type FaqItem,
 } from "@/components/sections/WeddingFaqAccordion";
-import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
+import { getRsvpDeadlineText } from "@/lib/wedding";
 
 type Props = {
-  includeCeremonyDetails?: boolean;
-};
-
-const ceremonyFaq: FaqItem = {
-  question: "Hoe laat worden we verwacht?",
-  answer: `De ceremonie start om ${getWeddingScheduleStartTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
+  includesStadhuis?: boolean;
 };
 
 const generalFaqItems: FaqItem[] = [
   {
-    question: "Waar kunnen we parkeren?",
-    answer: "Er is ruime gratis parking voorzien aan de locatie.",
+    question: "Tegen wanneer moeten we antwoorden?",
+    answer: `Gelieve ten laatste op ${getRsvpDeadlineText()} te antwoorden.`,
   },
   {
-    question: "Mogen kinderen meekomen?",
-    answer: "Onze trouw is een feest voor volwassenen. We vragen daarom vriendelijk om geen kinderen mee te brengen.",
+    question: "Kan ik mijn RSVP later nog aanpassen?",
+    answer: "Ja. Je kunt je antwoord later opnieuw openen en aanpassen via je persoonlijke uitnodiging.",
   },
   {
-    question: "Is er een dresscode?",
-    answer: `${wedding.dresscode}. Warme kleuren, elegante outfits en een feestelijke winterse sfeer.`,
+    question: "Kan ik dieetwensen of allergieën doorgeven?",
+    answer: "Ja. Per aanwezige persoon kun je aangeven of die vegetarisch of vegan eet. Allergieën of andere aandachtspunten kun je in het opmerkingenveld vermelden.",
   },
   {
-    question: "Kunnen we blijven overnachten?",
-    answer: "Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.",
+    question: "Kan ik een verzoeknummer doorgeven?",
+    answer: "Ja. Iedere aanwezige kan optioneel één nummer doorgeven dat hij of zij graag op het avondfeest wil horen.",
   },
   {
-    question: "Wat kunnen we cadeau doen?",
-    answer: wedding.gift,
+    question: "Mag ik iemand meenemen?",
+    answer: "Je kunt enkel antwoorden voor het aantal personen dat op je persoonlijke uitnodiging voorzien is. De uitnodigingen zijn voorzien voor maximaal één of twee volwassenen.",
   },
 ];
 
-export default function WeddingFaq({ includeCeremonyDetails = true }: Props) {
-  const items = includeCeremonyDetails
-    ? [ceremonyFaq, ...generalFaqItems]
+const stadhuisFaq: FaqItem = {
+  question:
+    "Ik ben uitgenodigd voor het stadhuis, maar kan daar niet bij zijn. Kan ik wel naar de rest komen?",
+  answer:
+    "Ja. Als het stadhuis deel uitmaakt van je uitnodiging, kun je in je RSVP apart aangeven of je daar aanwezig bent. Dat staat los van je aanwezigheid op de rest van de trouw.",
+};
+
+export default function WeddingFaq({ includesStadhuis = false }: Props) {
+  const items = includesStadhuis
+    ? [...generalFaqItems, stadhuisFaq]
     : generalFaqItems;
 
   return <WeddingFaqAccordion items={items} />;

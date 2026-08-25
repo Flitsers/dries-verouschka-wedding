@@ -112,7 +112,7 @@ const locationCopyByInvitationType: Record<InvitationType, string> = {
   evening_only: "Hier vieren we samen onze feestelijke avond.",
 };
 
-function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
+function getPracticalItems(): PracticalItem[] {
   return [
     {
       title: "Parking",
@@ -122,21 +122,9 @@ function getPracticalItems(invitationType: InvitationType): PracticalItem[] {
       title: "Geen kinderen",
       text: "Onze trouw is een feest voor volwassenen. We vragen daarom vriendelijk om geen kinderen mee te brengen.",
     },
-    ...(invitationType === "full_day"
-      ? [
-          {
-            title: "Aankomstuur",
-            text: `De ceremonie start om ${getWeddingScheduleStartTime("Ceremonie")}. We vragen onze gasten tijdig aanwezig te zijn.`,
-          },
-        ]
-      : []),
     {
       title: "Dresscode",
       text: `${wedding.dresscode}. Warme kleuren, elegante outfits en een feestelijke winterse sfeer.`,
-    },
-    {
-      title: "Overnachten",
-      text: "Voor wie graag in de buurt overnacht, zijn er verschillende mogelijkheden in en rond Dilbeek.",
     },
     {
       title: "Cadeau",
@@ -190,10 +178,10 @@ export default function PersonalizedInvitation({
           title="Waar we samen vieren"
           description={locationCopyByInvitationType[invitationType]}
         />
-        <WeddingPractical items={getPracticalItems(invitationType)} />
+        <WeddingPractical items={getPracticalItems()} />
         <WeddingHotels />
         <WeddingDresscode includeDinnerReference={invitationType !== "evening_only"} />
-        <WeddingFaq includeCeremonyDetails={invitationType === "full_day"} />
+        <WeddingFaq includesStadhuis={includesStadhuis} />
 
         <section id="rsvp" className="relative isolate overflow-hidden bg-[#183328] px-5 py-28 text-white sm:px-6 md:py-36">
           <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d4b06a]/5 blur-3xl" />
