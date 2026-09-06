@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       attending_guests,
       includes_stadhuis,
       stadhuis_attending,
+      ceremony_attending,
       rsvp_attendees (
         attendee_position,
         name,

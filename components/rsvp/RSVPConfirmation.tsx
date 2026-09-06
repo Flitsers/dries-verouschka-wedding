@@ -1,9 +1,11 @@
 type Props = {
   allowedGuests: number;
   attendingGuests: number | null;
+  includesCeremony: boolean;
+  ceremonyAttending: boolean | null;
 };
 
-export default function RSVPConfirmation({ allowedGuests, attendingGuests }: Props) {
+export default function RSVPConfirmation({ allowedGuests, attendingGuests, includesCeremony, ceremonyAttending }: Props) {
   const possessivePronoun = allowedGuests === 1 ? "je" : "jullie";
   const message = attendingGuests === null
     ? `We hebben ${possessivePronoun} antwoord ontvangen.`
@@ -20,6 +22,13 @@ export default function RSVPConfirmation({ allowedGuests, attendingGuests }: Pro
         <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-gray-300">
           {message}
         </p>
+        {includesCeremony && attendingGuests !== null && attendingGuests > 0 && (
+          <p className="mt-5 text-sm text-white/65">
+            Ceremonie: {ceremonyAttending === true
+              ? allowedGuests === 1 ? "Ja, ik ben erbij" : "Ja, we zijn erbij"
+              : ceremonyAttending === false ? "Nee" : "Nog niet doorgegeven"}
+          </p>
+        )}
       </div>
     </section>
   );

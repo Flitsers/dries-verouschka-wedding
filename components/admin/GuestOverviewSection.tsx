@@ -9,6 +9,7 @@ import type {
   AdminGuestOverviewInvitation,
   AdminGuestRsvpStatus,
   AdminGuestStadhuisStatus,
+  AdminGuestCeremonyStatus,
 } from "@/lib/admin/guest-overview-types";
 
 type Props = {
@@ -28,6 +29,11 @@ const invitationTypeLabels: Record<AdminGuestInvitationType, string> = {
 const stadhuisStatusLabels: Record<AdminGuestStadhuisStatus, string> = {
   attending: "Komt mee",
   not_attending: "Komt niet mee",
+  pending: "Nog niet doorgegeven",
+};
+const ceremonyStatusLabels: Record<AdminGuestCeremonyStatus, string> = {
+  attending: "Komt",
+  not_attending: "Komt niet",
   pending: "Nog niet doorgegeven",
 };
 
@@ -69,6 +75,7 @@ function formatCopyEntry(invitation: AdminGuestOverviewInvitation) {
   if (invitation.stadhuisStatus) {
     lines.push(`  Stadhuis: ${stadhuisStatusLabels[invitation.stadhuisStatus]}`);
   }
+  if (invitation.ceremonyStatus) lines.push(`  Ceremonie: ${ceremonyStatusLabels[invitation.ceremonyStatus]}`);
 
   return lines.join("\n");
 }
@@ -244,6 +251,18 @@ export default function GuestOverviewSection({ overview }: Props) {
           },
         ]
       : []),
+    {
+      label: "Ceremonie bevestigd",
+      value: overview.counts.ceremonyConfirmedGuests,
+      detail: "personen",
+      color: "text-emerald-200",
+    },
+    {
+      label: "Ceremonie nog open",
+      value: overview.counts.ceremonyPendingGuests,
+      detail: "personen",
+      color: "text-amber-100",
+    },
   ];
 
   return (
@@ -375,6 +394,7 @@ export default function GuestOverviewSection({ overview }: Props) {
                   <th className="w-[20%] px-6 py-4 font-medium">Type / maximum</th>
                   <th className="w-[18%] px-6 py-4 font-medium">RSVP-status</th>
                   <th className="w-[15%] px-6 py-4 font-medium">Stadhuis</th>
+                  <th className="w-[15%] px-6 py-4 font-medium">Ceremonie</th>
                   <th className="w-[19%] px-6 py-4 font-medium">Aanwezigen</th>
                   <th className="w-[6%] px-4 py-4 text-right font-medium"><span className="sr-only">Openen</span></th>
                 </tr>
@@ -397,6 +417,9 @@ export default function GuestOverviewSection({ overview }: Props) {
                     </td>
                     <td className="break-words px-6 py-5 text-sm text-white/65">
                       {invitation.stadhuisStatus ? stadhuisStatusLabels[invitation.stadhuisStatus] : <span className="text-white/25">—</span>}
+                    </td>
+                    <td className="break-words px-6 py-5 text-sm text-white/65">
+                      {invitation.ceremonyStatus ? ceremonyStatusLabels[invitation.ceremonyStatus] : <span className="text-white/25">—</span>}
                     </td>
                     <td className="px-6 py-5"><AttendeeNames invitation={invitation} /></td>
                     <td className="px-4 py-5 text-right">
@@ -429,6 +452,12 @@ export default function GuestOverviewSection({ overview }: Props) {
                     <div>
                       <dt className="text-xs uppercase tracking-[0.12em] text-white/35">Stadhuis</dt>
                       <dd className="mt-1 text-white/70">{stadhuisStatusLabels[invitation.stadhuisStatus]}</dd>
+                    </div>
+                  )}
+                  {invitation.ceremonyStatus && (
+                    <div>
+                      <dt className="text-xs uppercase tracking-[0.12em] text-white/35">Ceremonie</dt>
+                      <dd className="mt-1 text-white/70">{ceremonyStatusLabels[invitation.ceremonyStatus]}</dd>
                     </div>
                   )}
                   {invitation.rsvpStatus === "attending" && (

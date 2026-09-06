@@ -20,8 +20,10 @@ type Props = {
   familyName: string;
   allowedGuests: number;
   includesStadhuis: boolean;
+  includesCeremony: boolean;
   initialAttendingGuests: number | null;
   initialStadhuisAttending: boolean | null;
+  initialCeremonyAttending: boolean | null;
   initialAttendees: StoredRsvpAttendee[];
   initialSubmitError: string | null;
 };
@@ -88,6 +90,18 @@ function getInitialStadhuisError(formId: string): boolean {
   const error = getExistingForm(formId)?.querySelector<HTMLElement>(
     "[data-rsvp-stadhuis-error]",
   );
+  return error ? !error.hidden : false;
+}
+
+function getInitialCeremonyAttendance(formId: string, fallback: boolean | null): boolean | null {
+  const value = getExistingForm(formId)?.dataset.rsvpCeremony;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+}
+
+function getInitialCeremonyError(formId: string): boolean {
+  const error = getExistingForm(formId)?.querySelector<HTMLElement>("[data-rsvp-ceremony-error]");
   return error ? !error.hidden : false;
 }
 
@@ -175,8 +189,10 @@ export default function RSVPWizard({
   familyName,
   allowedGuests,
   includesStadhuis,
+  includesCeremony,
   initialAttendingGuests,
   initialStadhuisAttending,
+  initialCeremonyAttending,
   initialAttendees,
   initialSubmitError,
 }: Props) {
@@ -191,6 +207,9 @@ export default function RSVPWizard({
         initialAttendingGuests === 0 ? null : initialStadhuisAttending,
       ),
   );
+  const [ceremonyAttending, setCeremonyAttending] = useState<boolean | null>(() =>
+    getInitialCeremonyAttendance(formId, initialAttendingGuests === 0 ? null : initialCeremonyAttending),
+  );
   const [attendees, setAttendees] = useState<AttendeeDraft[]>(() =>
     getInitialAttendees(formId, initialAttendees),
   );
@@ -200,6 +219,7 @@ export default function RSVPWizard({
   const [showStadhuisError, setShowStadhuisError] = useState(() =>
     getInitialStadhuisError(formId),
   );
+  const [showCeremonyError, setShowCeremonyError] = useState(() => getInitialCeremonyError(formId));
   const hasUnresolvedInitialDetails = initialAttendees.some(
     (attendee) => !attendee.detailsComplete,
   );
@@ -242,6 +262,10 @@ export default function RSVPWizard({
     setAttendingGuests(value);
     setShowAttendanceError(false);
     if (value === 0) setShowStadhuisError(false);
+    if (value === 0) {
+      setShowCeremonyError(false);
+      setCeremonyAttending(null);
+    }
   };
 
   const goFromAttendance = () => {
@@ -261,6 +285,10 @@ export default function RSVPWizard({
       stadhuisAttending === null
     ) {
       setShowStadhuisError(true);
+      return;
+    }
+    if (includesCeremony && attendingGuests !== null && attendingGuests > 0 && ceremonyAttending === null) {
+      setShowCeremonyError(true);
       return;
     }
 
@@ -292,6 +320,8 @@ export default function RSVPWizard({
   );
   const effectiveStadhuisAttendance =
     includesStadhuis && attendingGuests === 0 ? false : stadhuisAttending;
+  const effectiveCeremonyAttendance =
+    includesCeremony && attendingGuests === 0 ? false : ceremonyAttending;
 
   return (
     <form
@@ -307,6 +337,8 @@ export default function RSVPWizard({
       data-rsvp-stadhuis={
         stadhuisAttending === null ? "" : String(stadhuisAttending)
       }
+      data-rsvp-includes-ceremony={String(includesCeremony)}
+      data-rsvp-ceremony={ceremonyAttending === null ? "" : String(ceremonyAttending)}
       aria-label={`Stap ${step} van 3`}
       className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10"
     >
@@ -324,6 +356,10 @@ export default function RSVPWizard({
           display: block;
         }
         .rsvp-stadhuis-option:has(input:checked) {
+          border-color: #d4b06a;
+          background-color: rgb(212 176 106 / 0.15);
+        }
+        .rsvp-ceremony-option:has(input:checked) {
           border-color: #d4b06a;
           background-color: rgb(212 176 106 / 0.15);
         }
@@ -377,6 +413,9 @@ export default function RSVPWizard({
               : String(effectiveStadhuisAttendance)
           }
         />
+      )}
+      {includesCeremony && (
+        <input type="hidden" name="ceremony_attending" value={effectiveCeremonyAttendance === null ? "" : String(effectiveCeremonyAttendance)} />
       )}
 
       <div className="mb-10">
@@ -660,6 +699,24 @@ export default function RSVPWizard({
             </p>
           </fieldset>
         )}
+        {includesCeremony && (
+          <fieldset data-rsvp-ceremony-fieldset aria-labelledby="ceremony-title" aria-describedby={showCeremonyError ? "ceremony-error" : undefined} className="mt-8 border-t border-white/10 pt-8">
+            <legend id="ceremony-title" className="text-3xl leading-none text-white sm:text-4xl" style={{ fontFamily: "var(--font-cormorant)" }}>
+              {allowedGuests === 1 ? "Kom je naar de ceremonie?" : "Komen jullie naar de ceremonie?"}
+            </legend>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {[{ value: true, label: "Ja" }, { value: false, label: "Nee" }].map((option) => (
+                <label key={String(option.value)} className="rsvp-ceremony-option cursor-pointer rounded-2xl border border-white/10 bg-black/10 px-5 py-4 transition hover:border-white/30 focus-within:outline focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-[#d4b06a]">
+                  <input type="radio" name="ceremony_option" value={String(option.value)} checked={ceremonyAttending === option.value} onChange={() => { setCeremonyAttending(option.value); setShowCeremonyError(false); }} className="sr-only" />
+                  <span className="text-lg font-medium text-white">{option.label}</span>
+                </label>
+              ))}
+            </div>
+            <p id="ceremony-error" data-rsvp-ceremony-error role="alert" hidden={!showCeremonyError} className="mt-4 rounded-xl border border-[#e2c17f]/25 bg-[#e2c17f]/10 px-4 py-3 text-sm text-[#f5d998]">
+              Kies of {allowedGuests === 1 ? "je" : "jullie"} naar de ceremonie {allowedGuests === 1 ? "komt" : "komen"}.
+            </p>
+          </fieldset>
+        )}
       </section>
 
       <section
@@ -708,6 +765,14 @@ export default function RSVPWizard({
                   : effectiveStadhuisAttendance === false
                     ? "Nee"
                     : "Nog niet gekozen"}
+              </dd>
+            </div>
+          )}
+          {includesCeremony && (
+            <div className="flex items-start justify-between gap-6 py-4">
+              <dt className="text-white/55">Ceremonie</dt>
+              <dd className="text-right text-white" data-rsvp-summary-ceremony>
+                {effectiveCeremonyAttendance === true ? (allowedGuests === 1 ? "Ja, ik ben erbij" : "Ja, we zijn erbij") : effectiveCeremonyAttendance === false ? "Nee" : "Nog niet gekozen"}
               </dd>
             </div>
           )}

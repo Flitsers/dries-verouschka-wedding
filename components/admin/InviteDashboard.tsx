@@ -23,6 +23,7 @@ type Invite = {
   invitation_type: string | null;
   includes_stadhuis: boolean;
   stadhuis_attending: boolean | null;
+  ceremony_attending: boolean | null;
 };
 
 type Props = {
@@ -178,9 +179,12 @@ export default function InviteDashboard({
     },
     0,
   );
+  const ceremonyInvites = invites.filter((invite) => getInvitationType(invite) === "full_day");
+  const ceremonyAttending = ceremonyInvites.reduce((total, invite) => total + (invite.ceremony_attending === true ? invite.attending_guests ?? 0 : 0), 0);
+  const ceremonyPending = ceremonyInvites.reduce((total, invite) => total + (invite.ceremony_attending === null ? !invite.answered ? invite.allowed_guests : invite.attending_guests ?? 0 : 0), 0);
   const eventAttendance = [
     { event: "Stadhuis", attending: stadhuisAttending, pending: stadhuisPending },
-    { event: "Ceremonie", attending: fullDay.attending, pending: fullDay.pending },
+    { event: "Ceremonie", attending: ceremonyAttending, pending: ceremonyPending },
     { event: "Dagsreceptie", attending: fullDay.attending + receptionPlus.attending, pending: fullDay.pending + receptionPlus.pending },
     { event: "Diner", attending: fullDay.attending + receptionPlus.attending, pending: fullDay.pending + receptionPlus.pending },
     { event: "Avondreceptie", attending: eveningOnly.attending, pending: eveningOnly.pending },

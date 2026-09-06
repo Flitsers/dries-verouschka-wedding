@@ -35,6 +35,7 @@ type Props = {
   includesCeremony: boolean;
   answered: boolean;
   attendingGuests: number | null;
+  ceremonyAttending: boolean | null;
 };
 
 const navigationLinks: readonly NavigationLink[] = [
@@ -63,15 +64,15 @@ function toTimelineEvent(
 ): TimelineEvent {
   return {
     title,
-    time: getWeddingScheduleStartTime(event.title),
+    time: event.time ? getWeddingScheduleStartTime(event.title) : undefined,
     description: event.description,
   };
 }
 
 const ceremony = getWeddingScheduleEvent("Ceremonie");
 const cityHall = getWeddingScheduleEvent("Stadhuis");
-const arrival = getWeddingScheduleEvent("Ontvangst");
-const reception = getWeddingScheduleEvent("Receptie");
+const arrival = getWeddingScheduleEvent("Ontvangst ceremonie");
+const reception = getWeddingScheduleEvent("Dagsreceptie");
 const dinner = getWeddingScheduleEvent("Diner");
 const eveningArrival = getWeddingScheduleEvent("Ontvangst avondgasten");
 const dessert = getWeddingScheduleEvent("Dessert");
@@ -123,7 +124,7 @@ function getPracticalItems(): PracticalItem[] {
     },
     {
       title: "Dresscode",
-      text: `${wedding.dresscode}. Warme kleuren, elegante outfits en een feestelijke winterse sfeer.`,
+      text: "De outfit die je aandoet met een kerstfeestje, maar een tikkeltje eleganter.",
     },
     {
       title: "Cadeau",
@@ -141,6 +142,7 @@ export default function PersonalizedInvitation({
   includesCeremony,
   answered,
   attendingGuests,
+  ceremonyAttending,
 }: Props) {
   const plural = allowedGuests === 2;
   const countdownInitialTimestamp = getRequestTimestamp();
@@ -194,6 +196,8 @@ export default function PersonalizedInvitation({
               <RSVPConfirmation
                 allowedGuests={allowedGuests}
                 attendingGuests={attendingGuests}
+                includesCeremony={includesCeremony}
+                ceremonyAttending={ceremonyAttending}
               />
             ) : (
               <div className="text-center">

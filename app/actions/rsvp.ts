@@ -135,6 +135,7 @@ export async function submitRSVP(
   const code = formData.get("code");
   const attendingGuestsValue = formData.get("attending_guests");
   const stadhuisAttendanceValues = formData.getAll("stadhuis_attending");
+  const ceremonyAttendanceValues = formData.getAll("ceremony_attending");
 
   if (
     typeof code !== "string" ||
@@ -150,14 +151,22 @@ export async function submitRSVP(
 
   const attendingGuests = Number(attendingGuestsValue);
   const stadhuisAttendanceValue = stadhuisAttendanceValues[0] ?? null;
+  const ceremonyAttendanceValue = ceremonyAttendanceValues[0] ?? null;
 
   if (
     stadhuisAttendanceValues.length > 1 ||
+    ceremonyAttendanceValues.length > 1 ||
     !(
       stadhuisAttendanceValue === null ||
       stadhuisAttendanceValue === "" ||
       stadhuisAttendanceValue === "true" ||
       stadhuisAttendanceValue === "false"
+    ) ||
+    !(
+      ceremonyAttendanceValue === null ||
+      ceremonyAttendanceValue === "" ||
+      ceremonyAttendanceValue === "true" ||
+      ceremonyAttendanceValue === "false"
     )
   ) {
     return {
@@ -170,6 +179,12 @@ export async function submitRSVP(
     stadhuisAttendanceValue === "true"
       ? true
       : stadhuisAttendanceValue === "false"
+        ? false
+        : null;
+  const ceremonyAttending =
+    ceremonyAttendanceValue === "true"
+      ? true
+      : ceremonyAttendanceValue === "false"
         ? false
         : null;
   const attendeeResult = parseAttendees(formData, attendingGuests);
@@ -186,6 +201,7 @@ export async function submitRSVP(
       attendingGuests,
       attendeeResult.attendees,
       stadhuisAttending,
+      ceremonyAttending,
     );
 
     if (

@@ -23,6 +23,7 @@ export async function updateRsvp(
   const inviteId = formData.get("invite_id");
   const rsvpValue = formData.get("rsvp_value");
   const stadhuisValue = formData.get("stadhuis_attending");
+  const ceremonyValue = formData.get("ceremony_attending");
 
   if (typeof inviteId !== "string" || !inviteId || typeof rsvpValue !== "string") {
     return { error: "De RSVP-gegevens zijn ongeldig.", success: null };
@@ -32,7 +33,7 @@ export async function updateRsvp(
   const { data: invite, error: lookupError } = await supabase
     .from("invites")
     .select(
-      "id, code, allowed_guests, includes_stadhuis, stadhuis_attending",
+      "id, code, allowed_guests, invitation_type, includes_stadhuis, stadhuis_attending",
     )
     .eq("id", inviteId)
     .single();
@@ -58,6 +59,7 @@ export async function updateRsvp(
 
     let attendees: RsvpAttendee[] = [];
     let stadhuisAttending: boolean | null = null;
+    let ceremonyAttending: boolean | null = null;
 
     if (invite.includes_stadhuis === true) {
       if (parsedAttendance === 0) {
@@ -69,6 +71,16 @@ export async function updateRsvp(
           error: "Kies of deze uitnodiging mee naar het stadhuis komt.",
           success: null,
         };
+      }
+    }
+
+    if (invite.invitation_type === "full_day") {
+      if (parsedAttendance === 0) {
+        ceremonyAttending = false;
+      } else if (ceremonyValue === "true" || ceremonyValue === "false") {
+        ceremonyAttending = ceremonyValue === "true";
+      } else {
+        return { error: "Kies of deze uitnodiging naar de ceremonie komt.", success: null };
       }
     }
 
@@ -105,6 +117,7 @@ export async function updateRsvp(
       parsedAttendance,
       attendees,
       stadhuisAttending,
+      ceremonyAttending,
     );
   }
 

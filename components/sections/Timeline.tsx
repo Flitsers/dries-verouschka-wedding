@@ -22,9 +22,11 @@ export default function Timeline() {
             <Reveal key={event.time}>
               <article className="relative grid grid-cols-[2.5rem_1fr] gap-4 md:grid-cols-[1fr_5rem_1fr] md:gap-0">
                 <div className={`hidden md:flex md:items-center ${index % 2 === 0 ? "md:col-start-1 md:justify-end md:pr-8" : "md:col-start-3 md:justify-start md:pl-8"}`}>
-                  <span className="rounded-full border border-[#d4b06a]/40 bg-[#d4b06a]/10 px-4 py-2 font-mono text-sm font-medium text-[#d4b06a] shadow-[0_8px_25px_rgba(0,0,0,0.18)]">
-                    {event.time}
-                  </span>
+                  {event.time && (
+                    <span className="rounded-full border border-[#d4b06a]/40 bg-[#d4b06a]/10 px-4 py-2 font-mono text-sm font-medium text-[#d4b06a] shadow-[0_8px_25px_rgba(0,0,0,0.18)]">
+                      {event.time}
+                    </span>
+                  )}
                 </div>
 
                 <div className="relative z-10 flex justify-center md:col-start-2 md:row-start-1 md:items-center">
@@ -35,9 +37,11 @@ export default function Timeline() {
 
                 <div className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition duration-500 hover:-translate-y-1 hover:border-[#d4b06a]/50 hover:bg-white/10 hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] md:row-start-1 md:p-8 ${index % 2 === 0 ? "md:col-start-3 md:ml-8" : "md:col-start-1 md:mr-8"}`}>
                   <span className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#d4b06a]/70 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-100" />
-                  <span className="text-sm font-mono font-medium text-[#d4b06a] md:hidden">
-                    {event.time}
-                  </span>
+                  {event.time && (
+                    <span className="text-sm font-mono font-medium text-[#d4b06a] md:hidden">
+                      {event.time}
+                    </span>
+                  )}
                   <h3 className="mt-2 text-3xl md:mt-0" style={{ fontFamily: "var(--font-cormorant)" }}>
                     {event.title}
                   </h3>

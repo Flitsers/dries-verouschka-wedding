@@ -10,6 +10,8 @@ type Props = {
   attendingGuests: number | null;
   includesStadhuis: boolean;
   stadhuisAttending: boolean | null;
+  includesCeremony: boolean;
+  ceremonyAttending: boolean | null;
 };
 
 const initialState = { error: null as string | null, success: null as string | null };
@@ -33,6 +35,8 @@ export default function AdminRsvpForm({
   attendingGuests,
   includesStadhuis,
   stadhuisAttending,
+  includesCeremony,
+  ceremonyAttending,
 }: Props) {
   const [state, formAction, pending] = useActionState(updateRsvp, initialState);
 
@@ -90,6 +94,16 @@ export default function AdminRsvpForm({
                 <option value="">Nog niet doorgegeven</option>
                 <option value="true">Komt mee</option>
                 <option value="false">Komt niet mee</option>
+              </select>
+            </label>
+          )}
+          {includesCeremony && (
+            <label className="w-full sm:max-w-xs">
+              <span className="mb-2 block text-xs uppercase tracking-[0.12em] text-white/40">Ceremonie</span>
+              <select name="ceremony_attending" defaultValue={ceremonyAttending === null ? "" : String(ceremonyAttending)} className="w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none focus:border-[#d4b06a]">
+                <option value="">Nog niet doorgegeven</option>
+                <option value="true">Komt</option>
+                <option value="false">Komt niet</option>
               </select>
             </label>
           )}

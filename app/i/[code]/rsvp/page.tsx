@@ -75,9 +75,13 @@ export default async function RSVPPage({ params, searchParams }: Props) {
           familyName={invitation.family_name}
           allowedGuests={invitation.allowed_guests}
           includesStadhuis={invitation.includes_stadhuis}
+          includesCeremony={invitation.invitation_type === "full_day"}
           initialAttendingGuests={invitation.answered ? invitation.attending_guests : null}
           initialStadhuisAttending={
             invitation.answered ? invitation.stadhuis_attending : null
+          }
+          initialCeremonyAttending={
+            invitation.answered ? invitation.ceremony_attending : null
           }
           initialAttendees={invitation.attendees}
           initialSubmitError={

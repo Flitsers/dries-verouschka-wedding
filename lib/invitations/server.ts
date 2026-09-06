@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   isInvitationType,
+  isCeremonyInvitation,
   type InvitationType,
 } from "@/app/i/[code]/invitation-types";
 import { normalizeInvitationCode } from "@/lib/invitations/code";
@@ -26,6 +27,7 @@ const publicInvitationFields = [
   "includes_stadhuis",
   "includes_ceremony",
   "stadhuis_attending",
+  "ceremony_attending",
 ].join(",");
 
 export type PublicInvitation = {
@@ -38,6 +40,7 @@ export type PublicInvitation = {
   includes_stadhuis: boolean;
   includes_ceremony: boolean;
   stadhuis_attending: boolean | null;
+  ceremony_attending: boolean | null;
 };
 
 export type PublicInvitationRsvp = PublicInvitation & {
@@ -74,6 +77,7 @@ function toPublicInvitation(value: unknown): PublicInvitation | null {
       value.stadhuis_attending === null ||
       typeof value.stadhuis_attending === "boolean"
     ) ||
+    !(value.ceremony_attending === null || typeof value.ceremony_attending === "boolean") ||
     !(
       attendingGuests === null ||
       (typeof attendingGuests === "number" &&
@@ -95,6 +99,9 @@ function toPublicInvitation(value: unknown): PublicInvitation | null {
     includes_stadhuis: value.includes_stadhuis,
     includes_ceremony: value.includes_ceremony,
     stadhuis_attending: value.stadhuis_attending,
+    ceremony_attending: isCeremonyInvitation(value.invitation_type)
+      ? value.ceremony_attending
+      : null,
   };
 }
 
@@ -193,6 +200,7 @@ export async function submitPublicInvitationRsvp(
   attendingGuests: number,
   attendees: RsvpAttendee[],
   stadhuisAttending: boolean | null,
+  ceremonyAttending: boolean | null,
 ): Promise<PublicRsvpResult> {
   const normalizedCode = normalizeInvitationCode(code);
   if (!normalizedCode) return { status: "invalid_code" };
@@ -209,7 +217,7 @@ export async function submitPublicInvitationRsvp(
   const supabase = createSupabaseAdminClient();
   const { data: invitation, error: lookupError } = await supabase
     .from("invites")
-    .select("allowed_guests, includes_stadhuis")
+    .select("allowed_guests, invitation_type, includes_stadhuis")
     .eq("code", normalizedCode)
     .maybeSingle();
 
@@ -228,6 +236,7 @@ export async function submitPublicInvitationRsvp(
   }
 
   let storedStadhuisAttendance: boolean | null;
+  let storedCeremonyAttendance: boolean | null;
 
   if (invitation.includes_stadhuis === true) {
     if (attendingGuests === 0) {
@@ -244,6 +253,20 @@ export async function submitPublicInvitationRsvp(
     storedStadhuisAttendance = null;
   }
 
+  if (isCeremonyInvitation(invitation.invitation_type)) {
+    if (attendingGuests === 0) {
+      if (ceremonyAttending === true) return { status: "invalid_attendance" };
+      storedCeremonyAttendance = false;
+    } else if (typeof ceremonyAttending !== "boolean") {
+      return { status: "invalid_attendance" };
+    } else {
+      storedCeremonyAttendance = ceremonyAttending;
+    }
+  } else {
+    if (ceremonyAttending !== null) return { status: "invalid_attendance" };
+    storedCeremonyAttendance = null;
+  }
+
   const { data: updatedCode, error: updateError } = await supabase.rpc(
     "save_invitation_rsvp",
     {
@@ -251,6 +274,7 @@ export async function submitPublicInvitationRsvp(
       p_answered: true,
       p_attending_guests: attendingGuests,
       p_stadhuis_attending: storedStadhuisAttendance,
+      p_ceremony_attending: storedCeremonyAttendance,
       p_attendees: attendees.map((attendee) => ({
         name: attendee.name.trim(),
         dietary_preference: attendee.dietaryPreference,
@@ -286,6 +310,7 @@ export async function resetInvitationRsvp(
       p_answered: false,
       p_attending_guests: null,
       p_stadhuis_attending: null,
+      p_ceremony_attending: null,
       p_attendees: [],
     },
   );

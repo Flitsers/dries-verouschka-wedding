@@ -9,6 +9,7 @@ export type AdminGuestStadhuisStatus =
   | "attending"
   | "not_attending"
   | "pending";
+export type AdminGuestCeremonyStatus = "attending" | "not_attending" | "pending";
 
 export type AdminGuestAttendee = {
   position: 1 | 2;
@@ -26,6 +27,7 @@ export type AdminGuestOverviewInvitation = {
   rsvpStatus: AdminGuestRsvpStatus;
   includesStadhuis: boolean;
   stadhuisStatus: AdminGuestStadhuisStatus | null;
+  ceremonyStatus: AdminGuestCeremonyStatus | null;
   attendees: AdminGuestAttendee[];
 };
 
@@ -38,6 +40,8 @@ export type AdminGuestOverview = {
     absentInvitations: number;
     stadhuisConfirmedGuests: number;
     stadhuisPendingInvitations: number;
+    ceremonyConfirmedGuests: number;
+    ceremonyPendingGuests: number;
   };
   hasStadhuisInvitations: boolean;
 };

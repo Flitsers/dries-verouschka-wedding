@@ -1,8 +1,8 @@
 export type WeddingScheduleTitle =
   | "Stadhuis"
-  | "Ontvangst"
+  | "Ontvangst ceremonie"
   | "Ceremonie"
-  | "Receptie"
+  | "Dagsreceptie"
   | "Diner"
   | "Ontvangst avondgasten"
   | "Dessert"
@@ -38,25 +38,24 @@ export const wedding = {
 
   schedule: [
     {
-      time: "13:00",
+      time: "12:30",
       title: "Stadhuis",
     },
     {
-      time: "15:00–15:30",
-      title: "Ontvangst",
+      time: "15:00",
+      title: "Ontvangst ceremonie",
     },
     {
-      time: "15:30–16:30",
+      time: "16:30",
       title: "Ceremonie",
-      description: "Onze ceremonie start stipt om 15:30.",
     },
     {
-      time: "16:30–18:00",
-      title: "Receptie",
+      time: "18:00",
+      title: "Dagsreceptie",
       description: "We klinken samen op een prachtige dag.",
     },
     {
-      time: "18:00–21:00",
+      time: "19:00",
       title: "Diner",
       description: "Een feestelijk diner met familie en vrienden.",
     },
@@ -69,12 +68,11 @@ export const wedding = {
       title: "Dessert",
     },
     {
-      time: "22:30",
+      time: "22:00",
       title: "Avondfeest",
       description: "De dansvloer gaat open!",
     },
     {
-      time: "00:30",
       title: "Midnight snack",
     },
     {

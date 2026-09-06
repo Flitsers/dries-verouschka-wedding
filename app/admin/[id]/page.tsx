@@ -39,12 +39,12 @@ async function updateInvitationType(formData: FormData) {
 
   const includesStadhuis =
     invitationType === "full_day" && formData.get("includes_stadhuis") === "on";
-  const includesCeremony = formData.get("includes_ceremony") === "on";
+  const includesCeremony = invitationType === "full_day";
 
   const { data: currentInvitation, error: lookupError } = await supabase
     .from("invites")
     .select(
-      "answered, attending_guests, includes_stadhuis, stadhuis_attending",
+      "answered, attending_guests, includes_stadhuis, stadhuis_attending, ceremony_attending",
     )
     .eq("id", id)
     .single();
@@ -61,6 +61,9 @@ async function updateInvitationType(formData: FormData) {
           currentInvitation.attending_guests === 0
         ? false
         : null;
+  const ceremonyAttending = invitationType === "full_day"
+    ? currentInvitation.ceremony_attending
+    : null;
 
   const { error } = await supabase
     .from("invites")
@@ -69,6 +72,7 @@ async function updateInvitationType(formData: FormData) {
       includes_stadhuis: includesStadhuis,
       includes_ceremony: includesCeremony,
       stadhuis_attending: stadhuisAttending,
+      ceremony_attending: ceremonyAttending,
     })
     .eq("id", id);
 
@@ -124,7 +128,11 @@ export default async function InviteDetails({ params }: Props) {
     ? data.invitation_type as keyof typeof invitationTypes
     : "full_day";
   const includesStadhuis = invitationType === "full_day" && data.includes_stadhuis === true;
-  const includesCeremony = data.includes_ceremony === true;
+  const includesCeremony = invitationType === "full_day";
+  const ceremonyAttending =
+    typeof data.ceremony_attending === "boolean"
+      ? data.ceremony_attending
+      : null;
   const attendingGuests = typeof data.attending_guests === "number" ? data.attending_guests : null;
   const stadhuisAttending =
     typeof data.stadhuis_attending === "boolean"
@@ -197,7 +205,9 @@ export default async function InviteDetails({ params }: Props) {
                   ...(includesStadhuis
                     ? [["Stadhuis", stadhuisAttendanceLabel]]
                     : []),
-                  ["Ceremonie", includesCeremony ? "Uitgenodigd" : "Niet uitgenodigd"],
+                  ...(includesCeremony
+                    ? [["Ceremonie", ceremonyAttending === true ? "Komt" : ceremonyAttending === false ? "Komt niet" : "Nog niet doorgegeven"]]
+                    : []),
                   ["Uitnodigingstype", invitationTypes[invitationType]],
                   ["E-mailadres", data.email || "Niet opgegeven"],
                   ["Telefoonnummer", data.phone || "Niet opgegeven"],
@@ -290,7 +300,9 @@ export default async function InviteDetails({ params }: Props) {
               allowedGuests={data.allowed_guests}
               answered={data.answered}
               attendingGuests={attendingGuests}
-              includesStadhuis={includesStadhuis}
+        includesStadhuis={includesStadhuis}
+        includesCeremony={includesCeremony}
+        ceremonyAttending={ceremonyAttending}
               stadhuisAttending={stadhuisAttending}
             />
 

@@ -25,6 +25,7 @@ type ExportInvitation = {
   attendingGuests: number | null;
   includesStadhuis: boolean;
   stadhuisAttending: boolean | null;
+  ceremonyAttending: boolean | null;
   attendees: ExportAttendee[];
 };
 
@@ -58,6 +59,7 @@ const guestListColumns = [
   "Verzoeknummer",
   "Uitgenodigd Stadhuis",
   "Stadhuis RSVP",
+  "Ceremonie RSVP",
 ];
 
 const foodColumns = [
@@ -199,9 +201,11 @@ function getInvitation(value: unknown, index: number): ExportInvitation {
       })
     : [];
 
+  const invitationType = getInvitationType(row.invitation_type);
+
   return {
     familyName,
-    invitationType: getInvitationType(row.invitation_type),
+    invitationType,
     allowedGuests,
     rsvpStatus,
     attendingGuests,
@@ -210,6 +214,9 @@ function getInvitation(value: unknown, index: number): ExportInvitation {
       row.stadhuis_attending === true || row.stadhuis_attending === false
         ? row.stadhuis_attending
         : null,
+    ceremonyAttending: invitationType === "full_day" && (row.ceremony_attending === true || row.ceremony_attending === false)
+      ? row.ceremony_attending
+      : null,
     attendees,
   };
 }
@@ -239,6 +246,13 @@ function getStadhuisRsvpLabel(invitation: ExportInvitation) {
   if (!invitation.includesStadhuis) return "Niet van toepassing";
   if (invitation.stadhuisAttending === true) return "Komt mee";
   if (invitation.stadhuisAttending === false) return "Komt niet mee";
+  return "Nog niet doorgegeven";
+}
+
+function getCeremonyRsvpLabel(invitation: ExportInvitation) {
+  if (invitation.invitationType !== "full_day") return "Niet van toepassing";
+  if (invitation.ceremonyAttending === true) return "Komt";
+  if (invitation.ceremonyAttending === false) return "Komt niet";
   return "Nog niet doorgegeven";
 }
 
@@ -274,7 +288,7 @@ export function buildGuestListCsv(values: unknown) {
     ];
 
     if (invitation.rsvpStatus !== "attending") {
-      rows.push([...sharedValues, "", "", "", "", ...stadhuisValues]);
+      rows.push([...sharedValues, "", "", "", "", ...stadhuisValues, getCeremonyRsvpLabel(invitation)]);
       continue;
     }
 
@@ -288,6 +302,7 @@ export function buildGuestListCsv(values: unknown) {
         attendee.notes ?? "",
         attendee.songRequest ?? "",
         ...stadhuisValues,
+        getCeremonyRsvpLabel(invitation),
       ]);
     }
   }

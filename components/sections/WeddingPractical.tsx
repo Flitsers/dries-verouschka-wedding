@@ -21,7 +21,7 @@ const defaultPracticalItems: PracticalItem[] = [
   },
   {
     title: "Dresscode",
-    text: `${wedding.dresscode}. Warme kleuren, elegante outfits en een feestelijke winterse sfeer.`,
+    text: "De outfit die je aandoet met een kerstfeestje, maar een tikkeltje eleganter.",
   },
   {
     title: "Kinderen",

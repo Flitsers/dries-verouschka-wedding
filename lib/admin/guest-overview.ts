@@ -119,17 +119,26 @@ export function buildAdminGuestOverview(values: unknown): AdminGuestOverview {
         : row.stadhuis_attending === false
           ? "not_attending" as const
           : "pending" as const;
+    const invitationType = getInvitationType(row.invitation_type);
+    const ceremonyStatus = invitationType !== "full_day"
+      ? null
+      : row.ceremony_attending === true
+        ? "attending" as const
+        : row.ceremony_attending === false
+          ? "not_attending" as const
+          : "pending" as const;
 
     return [{
       id,
       familyName,
       code,
-      invitationType: getInvitationType(row.invitation_type),
+      invitationType,
       allowedGuests,
       attendingGuests,
       rsvpStatus,
       includesStadhuis,
       stadhuisStatus,
+      ceremonyStatus,
       attendees: getAttendees(row.rsvp_attendees, attendingGuests),
     }];
   });
@@ -168,6 +177,8 @@ export function buildAdminGuestOverview(values: unknown): AdminGuestOverview {
       stadhuisPendingInvitations: invitations.filter(
         (invitation) => invitation.stadhuisStatus === "pending",
       ).length,
+      ceremonyConfirmedGuests: invitations.reduce((total, invitation) => total + (invitation.ceremonyStatus === "attending" ? invitation.attendingGuests ?? 0 : 0), 0),
+      ceremonyPendingGuests: invitations.reduce((total, invitation) => total + (invitation.ceremonyStatus === "pending" ? invitation.rsvpStatus === "pending" ? invitation.allowedGuests : invitation.attendingGuests ?? 0 : 0), 0),
     },
     hasStadhuisInvitations: invitations.some(
       (invitation) => invitation.includesStadhuis,

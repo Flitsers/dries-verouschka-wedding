@@ -2,8 +2,10 @@ type RSVPWizardState = {
   step: 1 | 2 | 3;
   attendingGuests: number | null;
   stadhuisAttending: boolean | null;
+  ceremonyAttending: boolean | null;
   showAttendanceError: boolean;
   showStadhuisError: boolean;
+  showCeremonyError: boolean;
 };
 
 type RSVPWizardForm = HTMLFormElement & {
@@ -29,6 +31,8 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
   const stadhuisOptions = Array.from(
     form.querySelectorAll<HTMLInputElement>('input[name="stadhuis_option"]'),
   );
+  const ceremonyInput = form.elements.namedItem("ceremony_attending") as HTMLInputElement | null;
+  const ceremonyOptions = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="ceremony_option"]'));
   const attendanceNext = form.querySelector<HTMLButtonElement>(
     "[data-rsvp-attendance-next]",
   );
@@ -48,6 +52,8 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
   const stadhuisFieldset = form.querySelector<HTMLFieldSetElement>(
     "[data-rsvp-stadhuis-fieldset]",
   );
+  const ceremonyError = form.querySelector<HTMLElement>("[data-rsvp-ceremony-error]");
+  const ceremonyFieldset = form.querySelector<HTMLFieldSetElement>("[data-rsvp-ceremony-fieldset]");
   const attendeeBlocks = Array.from(
     form.querySelectorAll<HTMLFieldSetElement>("[data-rsvp-attendee-block]"),
   );
@@ -61,6 +67,7 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
   const checkedOption = attendanceOptions.find((option) => option.checked);
   const initialStep = Number(form.dataset.rsvpStep);
   const initialStadhuisValue = form.dataset.rsvpStadhuis;
+  const initialCeremonyValue = form.dataset.rsvpCeremony;
   const state: RSVPWizardState = {
     step: initialStep === 2 || initialStep === 3 ? initialStep : 1,
     attendingGuests: Number.isInteger(parsedInitialValue)
@@ -74,10 +81,18 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
         : initialStadhuisValue === "false"
           ? false
           : null,
+    ceremonyAttending:
+      initialCeremonyValue === "true"
+        ? true
+        : initialCeremonyValue === "false"
+          ? false
+          : null,
     showAttendanceError: attendanceError ? !attendanceError.hidden : false,
     showStadhuisError: stadhuisError ? !stadhuisError.hidden : false,
+    showCeremonyError: ceremonyError ? !ceremonyError.hidden : false,
   };
   const includesStadhuis = form.dataset.rsvpIncludesStadhuis === "true";
+  const includesCeremony = form.dataset.rsvpIncludesCeremony === "true";
 
   form.__rsvpWizardState = state;
 
@@ -127,6 +142,15 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
           : effectiveStadhuisAttendance === false
             ? "Nee"
             : "Nog niet gekozen";
+    }
+
+    const ceremonySummary = form.querySelector<HTMLElement>("[data-rsvp-summary-ceremony]");
+    if (ceremonySummary) {
+      const effective = state.attendingGuests === 0 ? false : state.ceremonyAttending;
+      const singular = form.dataset.rsvpAllowedGuests === "1";
+      ceremonySummary.textContent = effective === true
+        ? singular ? "Ja, ik ben erbij" : "Ja, we zijn erbij"
+        : effective === false ? "Nee" : "Nog niet gekozen";
     }
 
     for (const summary of form.querySelectorAll<HTMLElement>(
@@ -197,6 +221,7 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       state.stadhuisAttending === null
         ? ""
         : String(state.stadhuisAttending);
+    form.dataset.rsvpCeremony = state.ceremonyAttending === null ? "" : String(state.ceremonyAttending);
     form.setAttribute("aria-label", `Stap ${state.step} van 3`);
 
     const stepLabel = form.querySelector<HTMLElement>("[data-rsvp-step-label]");
@@ -216,6 +241,11 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
           ? ""
           : String(effectiveStadhuisAttendance);
     }
+    if (ceremonyInput) {
+      ceremonyInput.value = state.attendingGuests === 0
+        ? "false"
+        : state.ceremonyAttending === null ? "" : String(state.ceremonyAttending);
+    }
 
     for (const option of attendanceOptions) {
       option.checked = Number(option.value) === state.attendingGuests;
@@ -225,9 +255,13 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       option.checked =
         (option.value === "true") === state.stadhuisAttending;
     }
+    for (const option of ceremonyOptions) {
+      option.checked = (option.value === "true") === state.ceremonyAttending;
+    }
 
     if (attendanceError) attendanceError.hidden = !state.showAttendanceError;
     if (stadhuisError) stadhuisError.hidden = !state.showStadhuisError;
+    if (ceremonyError) ceremonyError.hidden = !state.showCeremonyError;
 
     if (attendanceFieldset) {
       if (state.showAttendanceError) {
@@ -244,6 +278,10 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       } else {
         stadhuisFieldset.removeAttribute("aria-describedby");
       }
+    }
+    if (ceremonyFieldset) {
+      if (state.showCeremonyError) ceremonyFieldset.setAttribute("aria-describedby", "ceremony-error");
+      else ceremonyFieldset.removeAttribute("aria-describedby");
     }
 
     for (const panel of form.querySelectorAll<HTMLElement>("[data-rsvp-panel]")) {
@@ -262,6 +300,10 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
     state.attendingGuests = Number(option.value);
     state.showAttendanceError = false;
     if (state.attendingGuests === 0) state.showStadhuisError = false;
+    if (state.attendingGuests === 0) {
+      state.showCeremonyError = false;
+      state.ceremonyAttending = null;
+    }
     render();
   };
 
@@ -269,6 +311,12 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
     const option = event.currentTarget as HTMLInputElement;
     state.stadhuisAttending = option.value === "true";
     state.showStadhuisError = false;
+    render();
+  };
+  const selectCeremonyAttendance = (event: Event) => {
+    const option = event.currentTarget as HTMLInputElement;
+    state.ceremonyAttending = option.value === "true";
+    state.showCeremonyError = false;
     render();
   };
 
@@ -296,6 +344,11 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       render();
       return;
     }
+    if (includesCeremony && state.attendingGuests !== null && state.attendingGuests > 0 && state.ceremonyAttending === null) {
+      state.showCeremonyError = true;
+      render();
+      return;
+    }
     if (!form.reportValidity()) return;
     state.step = 3;
     render();
@@ -314,6 +367,9 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
   for (const option of stadhuisOptions) {
     option.addEventListener("change", selectStadhuisAttendance);
   }
+  for (const option of ceremonyOptions) {
+    option.addEventListener("change", selectCeremonyAttendance);
+  }
   for (const field of attendeeFields) {
     field.addEventListener("input", refreshSummary);
     field.addEventListener("change", refreshSummary);
@@ -330,6 +386,9 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
     }
     for (const option of stadhuisOptions) {
       option.removeEventListener("change", selectStadhuisAttendance);
+    }
+    for (const option of ceremonyOptions) {
+      option.removeEventListener("change", selectCeremonyAttendance);
     }
     for (const field of attendeeFields) {
       field.removeEventListener("input", refreshSummary);
