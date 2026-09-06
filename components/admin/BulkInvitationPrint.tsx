@@ -21,25 +21,41 @@ type Props = {
 
 const invitationTypeLabels: Record<InvitationType, string> = {
   full_day: "Volledige dag",
-  reception_plus: "Vanaf receptie",
-  evening_only: "Enkel avondfeest",
+  reception_plus: "Receptie + diner + avondfeest",
+  evening_only: "Avond",
 };
 
+const STICKERS_PER_PAGE = 8;
+
 export default function BulkInvitationPrint({ invitations }: Props) {
+  const [mode, setMode] = useState<"invitations" | "stickers">("invitations");
   const [filter, setFilter] = useState<"all" | InvitationType>("all");
+  const [includeTestInvitation, setIncludeTestInvitation] = useState(false);
   const filteredInvitations = useMemo(
     () => invitations.filter((invite) => filter === "all" || invite.invitationType === filter),
     [filter, invitations],
   );
+  const stickerInvitations = useMemo(() => filteredInvitations.filter((invite) => includeTestInvitation || invite.code !== "TESTDV7"), [filteredInvitations, includeTestInvitation]);
+  const stickerPages = useMemo(() => stickerInvitations.reduce<Invitation[][]>((pages, invitation, index) => {
+    const pageIndex = Math.floor(index / STICKERS_PER_PAGE);
+    pages[pageIndex] ??= [];
+    pages[pageIndex].push(invitation);
+    return pages;
+  }, []), [stickerInvitations]);
 
   return (
     <main className="min-h-screen bg-[#183328] px-4 py-8 text-white print:bg-white print:p-0 sm:px-6">
       <style>{`
         @media print {
           @page { size: 148mm 210mm; margin: 0; }
+          @page qr-stickers { size: A4 portrait; margin: 0; }
           html, body { background: #fff !important; }
           .bulk-print-card { width: 148mm !important; height: 210mm !important; break-after: page; page-break-after: always; }
           .bulk-print-card:last-child { break-after: auto; page-break-after: auto; }
+          .qr-sticker-preview { page: qr-stickers; }
+          .qr-print-page { width: 210mm !important; height: 297mm !important; break-after: page; page-break-after: always; }
+          .qr-print-page:last-child { break-after: auto; page-break-after: auto; }
+          .qr-sticker { break-inside: avoid; page-break-inside: avoid; }
         }
       `}</style>
 
@@ -48,8 +64,13 @@ export default function BulkInvitationPrint({ invitations }: Props) {
           <div>
             <Link href="/admin" className="text-sm text-[#d4b06a] transition hover:text-[#e2c17f]">← Terug naar dashboard</Link>
             <h1 className="mt-4 text-4xl sm:text-5xl" style={{ fontFamily: "var(--font-cormorant)" }}>Uitnodigingen afdrukken</h1>
-            <p className="mt-2 text-sm text-white/50">{filteredInvitations.length} van {invitations.length} uitnodigingen</p>
+            <p className="mt-2 text-sm text-white/50">{mode === "stickers" ? `${stickerInvitations.length} stickers geselecteerd` : `${filteredInvitations.length} van ${invitations.length} uitnodigingen`}</p>
           </div>
+          <div className="flex flex-col gap-3 sm:items-stretch lg:items-end">
+            <div className="flex flex-wrap gap-2" role="tablist" aria-label="Afdrukweergave">
+              <button type="button" role="tab" aria-selected={mode === "invitations"} onClick={() => setMode("invitations")} className={`rounded-full border px-4 py-2 text-sm transition ${mode === "invitations" ? "border-[#d4b06a] bg-[#d4b06a] text-[#183328]" : "border-white/15 text-white/70 hover:border-white/40"}`}>Uitnodigingen</button>
+              <button type="button" role="tab" aria-selected={mode === "stickers"} onClick={() => setMode("stickers")} className={`rounded-full border px-4 py-2 text-sm transition ${mode === "stickers" ? "border-[#d4b06a] bg-[#d4b06a] text-[#183328]" : "border-white/15 text-white/70 hover:border-white/40"}`}>QR-stickers</button>
+            </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <label>
               <span className="sr-only">Filter uitnodigingen</span>
@@ -58,13 +79,37 @@ export default function BulkInvitationPrint({ invitations }: Props) {
                 {(Object.keys(invitationTypeLabels) as InvitationType[]).map((type) => <option key={type} value={type}>{invitationTypeLabels[type]}</option>)}
               </select>
             </label>
-            <button type="button" onClick={() => window.print()} disabled={!filteredInvitations.length} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d4b06a] px-6 py-3 font-semibold text-[#183328] transition hover:bg-[#e2c17f] disabled:cursor-not-allowed disabled:opacity-50">
-              <Printer size={18} aria-hidden="true" /> Alles afdrukken
+            {mode === "stickers" && <label className="flex min-h-12 items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm text-white/75">
+              <input type="checkbox" checked={includeTestInvitation} onChange={(event) => setIncludeTestInvitation(event.target.checked)} className="accent-[#d4b06a]" />
+              Testuitnodiging tonen
+            </label>}
+            <button type="button" onClick={() => window.print()} disabled={!(mode === "stickers" ? stickerInvitations.length : filteredInvitations.length)} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d4b06a] px-6 py-3 font-semibold text-[#183328] transition hover:bg-[#e2c17f] disabled:cursor-not-allowed disabled:opacity-50">
+              <Printer size={18} aria-hidden="true" /> {mode === "stickers" ? "Print QR-stickers" : "Alles afdrukken"}
             </button>
+          </div>
           </div>
         </div>
       </section>
 
+      {mode === "stickers" ? (
+        <div className="qr-sticker-preview mx-auto flex max-w-full flex-col gap-8 overflow-x-auto print:block print:max-w-none print:gap-0">
+          {!stickerInvitations.length && <p className="py-20 text-center text-white/55 print:hidden">Geen uitnodigingen gevonden voor dit type.</p>}
+          {stickerPages.map((page, pageIndex) => (
+            <section key={pageIndex} className="qr-print-page mx-auto grid h-[297mm] w-[210mm] shrink-0 grid-cols-2 grid-rows-4 gap-[4mm] bg-white p-[10mm] shadow-2xl print:mx-0 print:max-w-none print:shadow-none">
+              {page.map((invite) => (
+                <article key={invite.code} className="qr-sticker flex min-h-0 flex-col items-center justify-between overflow-hidden rounded-[2mm] border border-[#183328]/20 bg-[#fffdf8] px-[5mm] py-[4mm] text-center text-[#183328]">
+                  <h2 className="line-clamp-2 w-full [overflow-wrap:anywhere] text-[4.4mm] font-semibold leading-tight" style={{ fontFamily: "var(--font-cormorant)" }}>{invite.familyName}</h2>
+                  <div className="flex shrink-0 items-center justify-center bg-white p-[2mm]">
+                    <Image src={invite.qrSource} alt={`QR-code voor ${invite.familyName}`} width={720} height={720} unoptimized className="h-[40mm] w-[40mm]" />
+                  </div>
+                  <p className="font-mono text-[4mm] font-semibold tracking-[0.18em]">{invite.code}</p>
+                </article>
+              ))}
+            </section>
+          ))}
+        </div>
+      ) : (
+      <>
       {!filteredInvitations.length && <p className="mx-auto max-w-5xl py-20 text-center text-white/55 print:hidden">Geen uitnodigingen gevonden voor dit type.</p>}
 
       <div className="mx-auto flex max-w-[148mm] flex-col gap-8 print:block print:max-w-none print:gap-0">
@@ -110,6 +155,8 @@ export default function BulkInvitationPrint({ invitations }: Props) {
           </Fragment>
         ))}
       </div>
+      </>
+      )}
     </main>
   );
 }
