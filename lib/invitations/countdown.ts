@@ -3,10 +3,10 @@ import { getWeddingScheduleStartTime, wedding } from "@/lib/wedding";
 
 const firstEventWithoutCeremonyByInvitationType: Record<
   InvitationType,
-  "Dagsreceptie" | "Avondfeest"
+  "Receptie" | "Avondfeest"
 > = {
-  full_day: "Dagsreceptie",
-  reception_plus: "Dagsreceptie",
+  full_day: "Receptie",
+  reception_plus: "Receptie",
   evening_only: "Avondfeest",
 };
 

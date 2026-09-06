@@ -72,10 +72,10 @@ function toTimelineEvent(
 const ceremony = getWeddingScheduleEvent("Ceremonie");
 const cityHall = getWeddingScheduleEvent("Stadhuis");
 const arrival = getWeddingScheduleEvent("Ontvangst ceremonie");
-const reception = getWeddingScheduleEvent("Dagsreceptie");
+const reception = getWeddingScheduleEvent("Receptie");
 const dinner = getWeddingScheduleEvent("Diner");
 const eveningArrival = getWeddingScheduleEvent("Ontvangst avondgasten");
-const dessert = getWeddingScheduleEvent("Dessert");
+const dessert = getWeddingScheduleEvent("Dessertenbuffet");
 const party = getWeddingScheduleEvent("Avondfeest");
 const midnightSnack = getWeddingScheduleEvent("Midnight snack");
 const end = getWeddingScheduleEvent("Einde");
