@@ -25,7 +25,7 @@ const invitationTypeLabels: Record<InvitationType, string> = {
   evening_only: "Avond",
 };
 
-const STICKERS_PER_PAGE = 8;
+const STICKERS_PER_PAGE = 12;
 
 export default function BulkInvitationPrint({ invitations }: Props) {
   const [mode, setMode] = useState<"invitations" | "stickers">("invitations");
@@ -52,10 +52,38 @@ export default function BulkInvitationPrint({ invitations }: Props) {
           html, body { background: #fff !important; }
           .bulk-print-card { width: 148mm !important; height: 210mm !important; break-after: page; page-break-after: always; }
           .bulk-print-card:last-child { break-after: auto; page-break-after: auto; }
-          .qr-sticker-preview { page: qr-stickers; }
-          .qr-print-page { width: 210mm !important; height: 297mm !important; break-after: page; page-break-after: always; }
+          .qr-sticker-preview { page: auto; }
+          .qr-print-page {
+            page: qr-stickers !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            grid-template-columns: repeat(3, 60mm) !important;
+            grid-template-rows: repeat(4, 60mm) !important;
+            grid-auto-columns: 60mm !important;
+            column-gap: 5mm !important;
+            row-gap: 5mm !important;
+            padding: 21mm 10mm !important;
+            justify-content: center !important;
+            align-content: center !important;
+            break-after: page;
+            page-break-after: always;
+          }
           .qr-print-page:last-child { break-after: auto; page-break-after: auto; }
-          .qr-sticker { break-inside: avoid; page-break-inside: avoid; }
+          .qr-sticker {
+            box-sizing: border-box !important;
+            width: 60mm !important;
+            min-width: 60mm !important;
+            max-width: 60mm !important;
+            height: 60mm !important;
+            min-height: 60mm !important;
+            max-height: 60mm !important;
+            flex: none !important;
+            flex-basis: 60mm !important;
+            justify-self: start !important;
+            align-self: start !important;
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
         }
       `}</style>
 
@@ -95,12 +123,12 @@ export default function BulkInvitationPrint({ invitations }: Props) {
         <div className="qr-sticker-preview mx-auto flex max-w-full flex-col gap-8 overflow-x-auto print:block print:max-w-none print:gap-0">
           {!stickerInvitations.length && <p className="py-20 text-center text-white/55 print:hidden">Geen uitnodigingen gevonden voor dit type.</p>}
           {stickerPages.map((page, pageIndex) => (
-            <section key={pageIndex} className="qr-print-page mx-auto grid h-[297mm] w-[210mm] shrink-0 grid-cols-2 grid-rows-4 gap-[4mm] bg-white p-[10mm] shadow-2xl print:mx-0 print:max-w-none print:shadow-none">
+            <section key={pageIndex} className="qr-print-page mx-auto grid h-[297mm] w-[210mm] shrink-0 grid-cols-[repeat(3,60mm)] grid-rows-[repeat(4,60mm)] gap-[5mm] bg-white px-[10mm] py-[21mm] shadow-2xl print:mx-0 print:max-w-none print:shadow-none">
               {page.map((invite) => (
-                <article key={invite.code} className="qr-sticker flex min-h-0 flex-col items-center justify-between overflow-hidden rounded-[2mm] border border-[#183328]/20 bg-[#fffdf8] px-[5mm] py-[4mm] text-center text-[#183328]">
+                <article key={invite.code} className="qr-sticker box-border flex h-[60mm] w-[60mm] min-h-0 flex-col items-center justify-between overflow-hidden rounded-[2mm] border border-[#183328]/20 bg-[#fffdf8] p-[3mm] text-center text-[#183328]">
                   <h2 className="line-clamp-2 w-full [overflow-wrap:anywhere] text-[4.4mm] font-semibold leading-tight" style={{ fontFamily: "var(--font-cormorant)" }}>{invite.familyName}</h2>
-                  <div className="flex shrink-0 items-center justify-center bg-white p-[2mm]">
-                    <Image src={invite.qrSource} alt={`QR-code voor ${invite.familyName}`} width={720} height={720} unoptimized className="h-[40mm] w-[40mm]" />
+                  <div className="flex shrink-0 items-center justify-center bg-white p-[1.5mm]">
+                    <Image src={invite.qrSource} alt={`QR-code voor ${invite.familyName}`} width={720} height={720} unoptimized className="h-[34mm] w-[34mm]" />
                   </div>
                   <p className="font-mono text-[4mm] font-semibold tracking-[0.18em]">{invite.code}</p>
                 </article>
