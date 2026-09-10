@@ -50,12 +50,12 @@ export const wedding = {
       title: "Ceremonie",
     },
     {
-      time: "18:00",
+      time: "16:30",
       title: "Receptie",
       description: "We klinken samen op een prachtige dag.",
     },
     {
-      time: "19:00",
+      time: "18:00",
       title: "Diner",
       description: "Een feestelijk diner met familie en vrienden.",
     },
