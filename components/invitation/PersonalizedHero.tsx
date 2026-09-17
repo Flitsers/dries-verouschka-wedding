@@ -5,6 +5,7 @@ type Props = {
   code: string;
   familyName: string;
   allowedGuests: number;
+  rsvpDeadlineText: string;
   countdownTargetTimestamp: number;
   countdownInitialTimestamp: number;
   answered: boolean;
@@ -23,6 +24,7 @@ export default function PersonalizedHero({
   code,
   familyName,
   allowedGuests,
+  rsvpDeadlineText,
   countdownTargetTimestamp,
   countdownInitialTimestamp,
   answered,
@@ -86,11 +88,14 @@ export default function PersonalizedHero({
             >
               {familyName}
             </p>
-            <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-white/70 sm:text-base">
-              {plural
-                ? "Deze uitnodiging is geldig voor 2 personen."
-                : "Deze uitnodiging is persoonlijk voor jou."}
-            </p>
+            <div className="mx-auto mt-5 max-w-lg">
+              <p className="text-sm font-medium leading-relaxed text-white/85 sm:text-base">
+                Deze uitnodiging is voor {allowedGuests} {plural ? "personen" : "persoon"}.
+              </p>
+              <p className="mt-3 text-xs leading-relaxed text-[#f5d998]/80 sm:text-sm">
+                Gelieve ten laatste op {rsvpDeadlineText} te antwoorden.
+              </p>
+            </div>
           </div>
         </div>
 

@@ -26,7 +26,7 @@ export const wedding = {
   event: {
     date: "2026-12-19",
     dateText: "19 december 2026",
-    rsvpDeadline: "2026-12-05",
+    rsvpDeadline: "2026-12-01",
   },
 
   venue: {
