@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { startRSVPWizard } from "@/components/rsvp/rsvp-wizard-runtime";
 import {
   dietaryPreferenceValues,
-  getDietaryPreferenceLabel,
   isDietaryPreference,
   RSVP_ATTENDEE_NAME_MAX_LENGTH,
   RSVP_ATTENDEE_NOTES_MAX_LENGTH,
@@ -13,6 +12,12 @@ import {
   type DietaryPreference,
   type StoredRsvpAttendee,
 } from "@/lib/invitations/rsvp";
+
+const guestDietaryPreferenceLabels: Record<DietaryPreference, string> = {
+  none: "Vlees/vis",
+  vegetarian: "Vegetarisch",
+  vegan: "Vegan",
+};
 
 type Props = {
   formId: string;
@@ -590,7 +595,7 @@ export default function RSVPWizard({
                     >
                       {dietaryPreferenceValues.map((value) => (
                         <option key={value} value={value}>
-                          {getDietaryPreferenceLabel(value)}
+                          {guestDietaryPreferenceLabels[value]}
                         </option>
                       ))}
                     </select>
@@ -801,7 +806,7 @@ export default function RSVPWizard({
                 <p className="mt-2 text-sm text-white/65">
                   Eetvoorkeur:{" "}
                   <span data-rsvp-summary-dietary-preference>
-                    {getDietaryPreferenceLabel(attendee.dietaryPreference)}
+                    {guestDietaryPreferenceLabels[attendee.dietaryPreference]}
                   </span>
                 </p>
                 <p

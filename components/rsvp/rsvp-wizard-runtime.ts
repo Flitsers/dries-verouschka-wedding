@@ -198,7 +198,7 @@ export function startRSVPWizard(root: HTMLFormElement | null): () => void {
       }
       if (dietaryPreferenceSummary) {
         dietaryPreferenceSummary.textContent =
-          dietaryPreference?.selectedOptions[0]?.text ?? "Geen voorkeur";
+          dietaryPreference?.selectedOptions[0]?.text ?? "Vlees/vis";
       }
 
       const notesValue = notes?.value.trim() ?? "";
