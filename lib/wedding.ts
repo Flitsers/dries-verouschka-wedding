@@ -1,6 +1,6 @@
 export type WeddingScheduleTitle =
   | "Stadhuis"
-  | "Ontvangst ceremonie"
+  | "Ontvangst gasten ceremonie"
   | "Ceremonie"
   | "Receptie"
   | "Diner"
@@ -13,6 +13,7 @@ export type WeddingScheduleTitle =
 export type WeddingScheduleEvent = {
   title: WeddingScheduleTitle;
   time?: string;
+  location?: string;
   description?: string;
 };
 
@@ -43,11 +44,13 @@ export const wedding = {
     },
     {
       time: "15:00",
-      title: "Ontvangst ceremonie",
+      title: "Ontvangst gasten ceremonie",
+      location: "Kattebroek",
     },
     {
       time: "15:30",
       title: "Ceremonie",
+      location: "Kattebroek",
     },
     {
       time: "16:30",

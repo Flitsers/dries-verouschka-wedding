@@ -65,13 +65,14 @@ function toTimelineEvent(
   return {
     title,
     time: event.time ? getWeddingScheduleStartTime(event.title) : undefined,
+    location: event.location,
     description: event.description,
   };
 }
 
 const ceremony = getWeddingScheduleEvent("Ceremonie");
 const cityHall = getWeddingScheduleEvent("Stadhuis");
-const arrival = getWeddingScheduleEvent("Ontvangst ceremonie");
+const arrival = getWeddingScheduleEvent("Ontvangst gasten ceremonie");
 const reception = getWeddingScheduleEvent("Receptie");
 const dinner = getWeddingScheduleEvent("Diner");
 const eveningArrival = getWeddingScheduleEvent("Ontvangst avondgasten");

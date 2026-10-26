@@ -2,6 +2,7 @@ import SectionTitle from "@/components/ui/SectionTitle";
 
 export type TimelineEvent = {
   time?: string;
+  location?: string;
   title: string;
   description?: string;
 };
@@ -43,6 +44,11 @@ export default function WeddingDayTimeline({ schedule }: Props) {
                     <h3 className="mt-4 text-4xl leading-none md:text-5xl" style={{ fontFamily: "var(--font-cormorant)" }}>
                       {item.title}
                     </h3>
+                    {item.location && (
+                      <p className="mt-2 text-sm font-medium tracking-wide text-white/55">
+                        {item.location}
+                      </p>
+                    )}
                     {item.description && (
                       <p className={`mt-5 max-w-md leading-relaxed text-white/65 ${isLeftAligned ? "md:ml-auto" : ""}`}>
                         {item.description}
