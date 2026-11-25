@@ -173,6 +173,7 @@ export default function PersonalizedInvitation({
           code={code}
           familyName={familyName}
           allowedGuests={allowedGuests}
+          invitationType={invitationType}
           rsvpDeadlineText={rsvpDeadlineText}
           countdownTargetTimestamp={getInvitationCountdownTargetTimestamp(
             invitationType,

@@ -228,6 +228,14 @@ export async function submitPublicInvitationRsvp(
 
   if (!invitation) return { status: "invitation_not_found" };
 
+  const attendeesToStore =
+    invitation.invitation_type === "evening_only"
+      ? attendees.map((attendee) => ({
+          ...attendee,
+          dietaryPreference: "none" as const,
+        }))
+      : attendees;
+
   if (
     (invitation.allowed_guests !== 1 && invitation.allowed_guests !== 2) ||
     attendingGuests > invitation.allowed_guests
@@ -275,7 +283,7 @@ export async function submitPublicInvitationRsvp(
       p_attending_guests: attendingGuests,
       p_stadhuis_attending: storedStadhuisAttendance,
       p_ceremony_attending: storedCeremonyAttendance,
-      p_attendees: attendees.map((attendee) => ({
+      p_attendees: attendeesToStore.map((attendee) => ({
         name: attendee.name.trim(),
         dietary_preference: attendee.dietaryPreference,
         notes: attendee.notes?.trim() || null,

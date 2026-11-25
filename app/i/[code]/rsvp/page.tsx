@@ -74,6 +74,7 @@ export default async function RSVPPage({ params, searchParams }: Props) {
           code={invitation.code}
           familyName={invitation.family_name}
           allowedGuests={invitation.allowed_guests}
+          invitationType={invitation.invitation_type}
           includesStadhuis={invitation.includes_stadhuis}
           includesCeremony={invitation.invitation_type === "full_day"}
           initialAttendingGuests={invitation.answered ? invitation.attending_guests : null}

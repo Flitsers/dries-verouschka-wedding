@@ -50,7 +50,7 @@ function parseAttendees(
 
     if (
       formData.getAll(nameKey).length !== 1 ||
-      formData.getAll(dietaryPreferenceKey).length !== 1 ||
+      formData.getAll(dietaryPreferenceKey).length > 1 ||
       formData.getAll(notesKey).length > 1 ||
       formData.getAll(songRequestKey).length > 1
     ) {
@@ -58,7 +58,7 @@ function parseAttendees(
     }
 
     const nameValue = formData.get(nameKey);
-    const dietaryPreference = formData.get(dietaryPreferenceKey);
+    const dietaryPreference = formData.get(dietaryPreferenceKey) ?? "none";
     const notesValue = formData.get(notesKey);
     const songRequestValue = formData.get(songRequestKey);
 

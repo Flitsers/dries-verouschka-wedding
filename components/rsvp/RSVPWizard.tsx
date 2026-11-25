@@ -2,6 +2,7 @@
 
 import { Check, ChevronLeft, ChevronRight, Send, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { InvitationType } from "@/app/i/[code]/invitation-types";
 import { startRSVPWizard } from "@/components/rsvp/rsvp-wizard-runtime";
 import {
   dietaryPreferenceValues,
@@ -24,6 +25,7 @@ type Props = {
   code: string;
   familyName: string;
   allowedGuests: number;
+  invitationType: InvitationType;
   includesStadhuis: boolean;
   includesCeremony: boolean;
   initialAttendingGuests: number | null;
@@ -112,6 +114,7 @@ function getInitialCeremonyError(formId: string): boolean {
 
 function createAttendeeDrafts(
   initialAttendees: StoredRsvpAttendee[],
+  invitationType: InvitationType,
 ): AttendeeDraft[] {
   return ([1, 2] as const).map((position) => {
     const attendee = initialAttendees.find(
@@ -122,7 +125,10 @@ function createAttendeeDrafts(
     return {
       position,
       name: completeAttendee?.name ?? "",
-      dietaryPreference: completeAttendee?.dietaryPreference ?? "none",
+      dietaryPreference:
+        invitationType === "evening_only"
+          ? "none"
+          : completeAttendee?.dietaryPreference ?? "none",
       notes: completeAttendee?.notes ?? "",
       songRequest: completeAttendee?.songRequest ?? "",
     };
@@ -132,9 +138,10 @@ function createAttendeeDrafts(
 function getInitialAttendees(
   formId: string,
   fallback: StoredRsvpAttendee[],
+  invitationType: InvitationType,
 ): AttendeeDraft[] {
   const form = getExistingForm(formId);
-  if (!form) return createAttendeeDrafts(fallback);
+  if (!form) return createAttendeeDrafts(fallback, invitationType);
 
   return ([1, 2] as const).map((position) => {
     const name = form.elements.namedItem(`attendee_${position}_name`);
@@ -152,10 +159,12 @@ function getInitialAttendees(
       ? fallbackAttendee
       : null;
     const storedDietaryPreference =
-      dietaryPreference instanceof HTMLSelectElement &&
-      isDietaryPreference(dietaryPreference.value)
-        ? dietaryPreference.value
-        : completeFallbackAttendee?.dietaryPreference ?? "none";
+      invitationType === "evening_only"
+        ? "none"
+        : dietaryPreference instanceof HTMLSelectElement &&
+            isDietaryPreference(dietaryPreference.value)
+          ? dietaryPreference.value
+          : completeFallbackAttendee?.dietaryPreference ?? "none";
 
     return {
       position,
@@ -193,6 +202,7 @@ export default function RSVPWizard({
   code,
   familyName,
   allowedGuests,
+  invitationType,
   includesStadhuis,
   includesCeremony,
   initialAttendingGuests,
@@ -216,7 +226,7 @@ export default function RSVPWizard({
     getInitialCeremonyAttendance(formId, initialAttendingGuests === 0 ? null : initialCeremonyAttending),
   );
   const [attendees, setAttendees] = useState<AttendeeDraft[]>(() =>
-    getInitialAttendees(formId, initialAttendees),
+    getInitialAttendees(formId, initialAttendees, invitationType),
   );
   const [showAttendanceError, setShowAttendanceError] = useState(() =>
     getInitialAttendanceError(formId),
@@ -228,6 +238,7 @@ export default function RSVPWizard({
   const hasUnresolvedInitialDetails = initialAttendees.some(
     (attendee) => !attendee.detailsComplete,
   );
+  const isEveningOnly = invitationType === "evening_only";
 
   useEffect(() => startRSVPWizard(getExistingForm(formId)), [formId]);
 
@@ -578,28 +589,30 @@ export default function RSVPWizard({
                       className="mt-2 w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none transition focus:border-[#d4b06a]"
                     />
                   </label>
-                  <label>
-                    <span className="text-sm text-white/70">Eetvoorkeur</span>
-                    <select
-                      name={`attendee_${attendee.position}_dietary_preference`}
-                      value={attendee.dietaryPreference}
-                      onChange={(event) => {
-                        if (isDietaryPreference(event.target.value)) {
-                          updateAttendee(attendee.position, {
-                            dietaryPreference: event.target.value,
-                          });
-                        }
-                      }}
-                      disabled={!active}
-                      className="mt-2 w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none transition focus:border-[#d4b06a]"
-                    >
-                      {dietaryPreferenceValues.map((value) => (
-                        <option key={value} value={value}>
-                          {guestDietaryPreferenceLabels[value]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  {!isEveningOnly && (
+                    <label>
+                      <span className="text-sm text-white/70">Eetvoorkeur</span>
+                      <select
+                        name={`attendee_${attendee.position}_dietary_preference`}
+                        value={attendee.dietaryPreference}
+                        onChange={(event) => {
+                          if (isDietaryPreference(event.target.value)) {
+                            updateAttendee(attendee.position, {
+                              dietaryPreference: event.target.value,
+                            });
+                          }
+                        }}
+                        disabled={!active}
+                        className="mt-2 w-full rounded-xl border border-white/10 bg-[#10261d] px-4 py-3 text-white outline-none transition focus:border-[#d4b06a]"
+                      >
+                        {dietaryPreferenceValues.map((value) => (
+                          <option key={value} value={value}>
+                            {guestDietaryPreferenceLabels[value]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <label className="sm:col-span-2">
                     <span className="text-sm text-white/70">Opmerkingen</span>
                     <textarea
@@ -803,12 +816,14 @@ export default function RSVPWizard({
                 <p className="mt-2 text-xl text-white" data-rsvp-summary-name>
                   {attendee.name || `Persoon ${attendee.position}`}
                 </p>
-                <p className="mt-2 text-sm text-white/65">
-                  Eetvoorkeur:{" "}
-                  <span data-rsvp-summary-dietary-preference>
-                    {guestDietaryPreferenceLabels[attendee.dietaryPreference]}
-                  </span>
-                </p>
+                {!isEveningOnly && (
+                  <p className="mt-2 text-sm text-white/65">
+                    Eetvoorkeur:{" "}
+                    <span data-rsvp-summary-dietary-preference>
+                      {guestDietaryPreferenceLabels[attendee.dietaryPreference]}
+                    </span>
+                  </p>
+                )}
                 <p
                   className="mt-2 text-sm leading-relaxed text-white/65"
                   data-rsvp-summary-notes-row

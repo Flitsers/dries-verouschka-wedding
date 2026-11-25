@@ -1,10 +1,12 @@
 import Countdown from "@/components/sections/Countdown";
+import type { InvitationType } from "@/app/i/[code]/invitation-types";
 import { wedding } from "@/lib/wedding";
 
 type Props = {
   code: string;
   familyName: string;
   allowedGuests: number;
+  invitationType: InvitationType;
   rsvpDeadlineText: string;
   countdownTargetTimestamp: number;
   countdownInitialTimestamp: number;
@@ -24,6 +26,7 @@ export default function PersonalizedHero({
   code,
   familyName,
   allowedGuests,
+  invitationType,
   rsvpDeadlineText,
   countdownTargetTimestamp,
   countdownInitialTimestamp,
@@ -97,6 +100,14 @@ export default function PersonalizedHero({
               </p>
             </div>
           </div>
+
+          {invitationType === "evening_only" && (
+            <p className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-white/90 sm:text-lg">
+              {plural
+                ? "Jullie zijn uitgenodigd voor het avondfeest."
+                : "Je bent uitgenodigd voor het avondfeest."}
+            </p>
+          )}
         </div>
 
         <div className="mx-auto mt-8 max-w-[34rem] sm:mt-10">
